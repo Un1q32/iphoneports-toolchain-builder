@@ -1,0 +1,19 @@
+#!/bin/sh
+
+case "$0" in *++) cc='clang++' ;; esac
+
+target="${0##*/}"
+target="${target%-*}"
+
+sdk="${_SDK:-$("$target-sdkpath")}"
+
+[ -d "$sdk/var/usr" ] && includeflags="-I$sdk/var/usr/include" && libflags="-L$sdk/var/usr/lib"
+
+exec ${cc:-clang} \
+    -target "$target" \
+    --config-system-dir="${0%/*}/../etc/iphoneports" \
+    -isysroot "$sdk" \
+    "$includeflags" \
+    "$libflags" \
+    -Wno-unused-command-line-argument \
+    "$@"

@@ -1,0 +1,2 @@
+#!/bin/sh
+MANPATH="${0%/*}/../share/cctools" exec man "$@"
