@@ -43,4 +43,5 @@ for link in c++ clang clang++ gcc g++; do
     ln -s cc "libexec/iphoneports/$link"
 done
 rm -rf include
+mkdir -p share/iphoneports
 )
