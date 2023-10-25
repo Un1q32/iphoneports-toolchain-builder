@@ -31,7 +31,7 @@ mkdir -p "$pwd/toolchain/bin"
 cp ldid "$pwd/toolchain/bin"
 )
 
-cp -ar "$scriptroot/bin" "$scriptroot/etc" "$scriptroot/libexec" toolchain
+cp -a "$scriptroot"/files/* toolchain
 
 (
 cd toolchain || exit 1
