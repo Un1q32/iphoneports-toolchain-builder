@@ -44,4 +44,5 @@ for link in c++ clang clang++ gcc g++; do
 done
 rm -rf include
 mkdir -p share/iphoneports
+[ -n "$1" ] && { printf '\n'; ./bin/cctools-add-target "$1"; }
 )

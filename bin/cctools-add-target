@@ -15,4 +15,4 @@ for target in "$@"; do
     done
 done
 
-[ -d "../share/iphoneports/$target" ] || printf "Don't forget to add an sdk for your target\n"
+[ -d "../share/iphoneports/$target" ] || printf "Don't forget to put an sdk for your target at %s\n" "$(realpath "../share/iphoneports/$target")"
