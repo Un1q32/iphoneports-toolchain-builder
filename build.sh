@@ -5,6 +5,8 @@ rm -rf cctools-port apple-libtapi ldid-2.1.5-procursus7 toolchain
 [ "${0%/*}" = "$0" ] && scriptroot="." || scriptroot="${0%/*}"
 pwd="$PWD"
 
+(
+mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
 printf "Building libtapi\n\n"
 git clone https://github.com/tpoechtrager/apple-libtapi.git
 (
@@ -30,11 +32,12 @@ make CXX=clang++
 mkdir -p "$pwd/toolchain/bin"
 cp ldid "$pwd/toolchain/bin"
 )
+)
 
-cp -a "$scriptroot"/files/* toolchain
+cp -a "$scriptroot"/files/* "$pwd/toolchain"
 
 (
-cd toolchain || exit 1
+cd "$pwd/toolchain" || exit 1
 strip libexec/cctools/*
 for as in arm i386 ppc ppc64 x86_64; do
     strip "libexec/as/$as/as"
