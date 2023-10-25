@@ -4,7 +4,7 @@
 
 ## Requirements
 
-Clang 16 or newer
+- Clang 16+
 
 ## Setup
 
