@@ -18,7 +18,7 @@ You can add a target with `cctools-add-target` in `toolchain/bin`, or optionally
 
 ### SDK
 
-You can download a compatible iOS SDK from https://github.com/OldWorldOrdr/ios-sdks
+You can download a compatible iOS SDK from https://invoxiplaygames.uk/sdks
 
 Place your extracted SDK in `toolchain/share/iphoneports/`, the SDK should be named after the target it will be used for
 
