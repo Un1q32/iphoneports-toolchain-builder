@@ -16,6 +16,8 @@
 
 You can add a target with `cctools-add-target` in `toolchain/bin`, or optionally with the first arguement to `./build.sh`
 
+You may have to crate a clang config file for your target, look in `toolchain/etc/iphoneports` to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
+
 ### SDK
 
 You can download the SDK used for iPhonePorts builds [here](https://github.com/OldWorldOrdr/iphoneports-sdk/raw/master/iPhoneOS5.0.sdk.tar.xz)
