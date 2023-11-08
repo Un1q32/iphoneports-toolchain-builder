@@ -55,5 +55,10 @@ for lib in lib/*; do
     fi
 done
 mkdir -p share/iphoneports
-[ -n "$1" ] && { printf '\n'; ./bin/cctools-add-target "$1"; }
+if [ -n "$1" ]; then
+    printf '\n'
+    for target in "$@"; do
+        ./bin/cctools-add-target "$target"
+    done
+fi
 )

@@ -9,7 +9,7 @@
 ## Setup
 
 ```sh
-./build.sh [target]
+./build.sh [targets...]
 ```
 
 `build.sh` will create a toolchain folder in the currect directory containing the toolchain
