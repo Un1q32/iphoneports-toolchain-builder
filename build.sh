@@ -1,9 +1,10 @@
 #!/bin/sh -e
-rm -rf cctools-port apple-libtapi ldid-2.1.5-procursus7 toolchain
 { command -v clang > /dev/null 2>&1 && command -v clang++ > /dev/null 2>&1; } || { printf "clang and clang++ are required to build this\n"; exit 1; }
 
 [ "${0%/*}" = "$0" ] && scriptroot="." || scriptroot="${0%/*}"
 pwd="$PWD"
+
+rm -rf "$pwd/toolchain" "$scriptroot/build"
 
 (
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
