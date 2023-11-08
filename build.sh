@@ -47,6 +47,13 @@ for link in c++ clang clang++ gcc g++; do
     ln -s cc "libexec/iphoneports/$link"
 done
 rm -rf include
+for lib in lib/*; do
+    if [ -h "$lib" ]; then
+        rm "$lib"
+    else
+        strip "$lib"
+    fi
+done
 mkdir -p share/iphoneports
 [ -n "$1" ] && { printf '\n'; ./bin/cctools-add-target "$1"; }
 )
