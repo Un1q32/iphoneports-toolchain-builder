@@ -4,8 +4,10 @@
 
 ## Requirements
 
-- Clang 16+
-- libdispatch-dev
+- LLVM+Clang 16+
+- libdispatch-dev and libblocksruntime
+- libstdc++ or libc++ with C++20 support
+- Systems with musl require musl-fts
 
 ## Setup
 
