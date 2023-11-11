@@ -1,6 +1,6 @@
 #!/bin/sh
 
-case "$0" in *++) cc='clang++' ;; esac
+case "$0" in *++) cc=clang++ ;; esac
 
 target="${0##*/}"
 target="${target%-*}"

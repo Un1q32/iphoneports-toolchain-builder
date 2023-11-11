@@ -17,7 +17,7 @@ INSTALLPREFIX="$pwd/toolchain" CC=clang CXX=clang++ ./build.sh
 )
 
 printf "Building cctools-port\n\n"
-git clone https://github.com/OldWorldOrdr/cctools-port.git
+git clone https://github.com/OldWorldOrdr/cctools-port.git -b 1009.2-ld64-907
 (
 cd cctools-port/cctools || exit 1
 ./configure --prefix="$pwd/toolchain" --bindir="$pwd/toolchain/libexec/cctools" --mandir="$pwd/toolchain/share/cctools" --with-libtapi="$pwd/toolchain"
