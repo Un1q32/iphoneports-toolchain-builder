@@ -5,6 +5,7 @@
 ## Requirements
 
 - Clang 16+
+- libdispatch-dev
 
 ## Setup
 
