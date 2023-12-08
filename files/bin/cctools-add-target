@@ -13,6 +13,5 @@ for target in "$@"; do
     for bin in ../libexec/iphoneports/*; do
         ln -sf "$bin" "$target-${bin##*/}"
     done
+    [ -d "../share/iphoneports/$target" ] || printf "Don't forget to put an sdk for your target at %s\n" "$(realpath "../share/iphoneports/$target")"
 done
-
-[ -d "../share/iphoneports/$target" ] || printf "Don't forget to put an sdk for your target at %s\n" "$(realpath "../share/iphoneports/$target")"
