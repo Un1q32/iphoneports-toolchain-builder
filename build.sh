@@ -1,6 +1,16 @@
 #!/bin/sh -e
 { command -v clang > /dev/null 2>&1 && command -v clang++ > /dev/null 2>&1; } || { printf "clang and clang++ are required to build this\n"; exit 1; }
 
+if [ -z "$STRIP" ]; then
+    if command -v llvm-strip > /dev/null 2>&1; then
+        STRIP="llvm-strip"
+    elif command -v strip > /dev/null 2>&1; then
+        STRIP="strip"
+    else
+        STRIP="true"
+    fi
+fi
+
 [ "${0%/*}" = "$0" ] && scriptroot="." || scriptroot="${0%/*}"
 pwd="$PWD"
 
@@ -39,9 +49,9 @@ cp -a "$scriptroot"/files/* "$pwd/toolchain"
 
 (
 cd "$pwd/toolchain" || exit 1
-strip libexec/cctools/*
+"$STRIP" libexec/cctools/*
 for as in arm i386 ppc ppc64 x86_64; do
-    strip "libexec/as/$as/as"
+    "$STRIP" "libexec/as/$as/as"
 done
 for link in c++ clang clang++ gcc g++; do
     ln -s cc "libexec/iphoneports/$link"
@@ -51,7 +61,7 @@ for lib in lib/*; do
     if [ -h "$lib" ]; then
         rm "$lib"
     else
-        strip "$lib"
+        "$STRIP" "$lib"
     fi
 done
 mkdir -p share/iphoneports
