@@ -7,10 +7,8 @@ target="${target%-*}"
 
 sdk="${_SDK:-$("$target-sdkpath")}"
 
-if [ -d "$sdk/var/usr" ]; then
-    includeflags="-I$sdk/var/usr/include"
-    libflags="-L$sdk/var/usr/lib"
-fi
+[ -d "$sdk/var/usr/include" ] && includeflags="-I$sdk/var/usr/include"
+[ -d "$sdk/var/usr/lib" ] && libflags="-L$sdk/var/usr/lib"
 
 exec ${cc:-clang} \
     -target "$target" \
