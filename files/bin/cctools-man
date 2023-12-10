@@ -1,2 +1,2 @@
 #!/bin/sh
-MANPATH="${0%/*}/../share/cctools" exec man "$@"
+MANPATH="${0%/*}/../share/cctools:${0%/*}/../share/iphoneports/*/usr/share/man" exec man "$@"
