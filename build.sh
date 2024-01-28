@@ -36,7 +36,7 @@ make install
 )
 
 printf "Building ldid\n\n"
-wget https://github.com/ProcursusTeam/ldid/archive/refs/tags/v2.1.5-procursus7.tar.gz -q -O- | tar xz
+curl -# -L https://github.com/ProcursusTeam/ldid/archive/refs/tags/v2.1.5-procursus7.tar.gz | tar xz
 (
 cd ldid-2.1.5-procursus7 || exit 1
 make CXX=clang++
@@ -50,8 +50,8 @@ cp -a "$scriptroot"/files/* "$pwd/toolchain"
 (
 cd "$pwd/toolchain" || exit 1
 "$STRIP" libexec/cctools/*
-for as in arm i386 ppc ppc64 x86_64; do
-    "$STRIP" "libexec/as/$as/as"
+for arch in arm i386 ppc ppc64 x86_64; do
+    "$STRIP" "libexec/as/$arch/as"
 done
 for link in c++ clang clang++ gcc g++; do
     ln -s cc "libexec/iphoneports/$link"
@@ -68,7 +68,7 @@ mkdir -p share/iphoneports
 if [ -n "$1" ]; then
     printf '\n'
     for target in "$@"; do
-        ./bin/cctools-add-target "$target"
+        ./bin/iphoneports-add-target "$target"
     done
 fi
 )
