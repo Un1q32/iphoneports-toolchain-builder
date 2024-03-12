@@ -1,20 +1,23 @@
 #!/bin/sh
 
-case "$0" in *++) cc=clang++ ;; esac
+case "$0" in *++) cc='clang++ -stdlib=libstdc++' ;; esac
 
 target="${0##*/}"
 target="${target%-*}"
 
 sdk="${_SDK:-$("$target-sdkpath")}"
+minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
 
 [ -d "$sdk/var/usr/include" ] && includeflags="-I$sdk/var/usr/include"
 [ -d "$sdk/var/usr/lib" ] && libflags="-L$sdk/var/usr/lib"
 
 exec ${cc:-clang} \
     -target "$target" \
-    --config-system-dir="${0%/*}/../etc/iphoneports" \
+    --no-default-config \
     -isysroot "$sdk" \
     "$includeflags" \
     "$libflags" \
     -Wno-unused-command-line-argument \
+    -mlinker-version=907 \
+    "$minver" \
     "$@"
