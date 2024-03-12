@@ -6,7 +6,7 @@ target="${0##*/}"
 target="${target%-*}"
 
 sdk="${_SDK:-$("$target-sdkpath")}"
-minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
+[ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
 
 [ -d "$sdk/var/usr/include" ] && includeflags="-I$sdk/var/usr/include"
 [ -d "$sdk/var/usr/lib" ] && libflags="-L$sdk/var/usr/lib"
