@@ -19,29 +19,33 @@ rm -rf "$pwd/toolchain" "$scriptroot/build"
 (
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
 printf "Building libtapi\n\n"
-git clone https://github.com/tpoechtrager/apple-libtapi.git
+tapiver="1300.6.5"
+curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar xz
 (
-cd apple-libtapi || exit 1
+cd "apple-libtapi-$tapiver" || exit 1
 INSTALLPREFIX="$pwd/toolchain" CC=clang CXX=clang++ ./build.sh
 ./install.sh
 )
 
 printf "Building cctools-port\n\n"
-git clone https://github.com/Un1q32/cctools-port.git -b 1009.2-ld64-907
+cctoolsver="1009.2-ld64-907"
+curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
 (
-cd cctools-port/cctools || exit 1
-./configure --prefix="$pwd/toolchain" --bindir="$pwd/toolchain/libexec/cctools" --mandir="$pwd/toolchain/share/cctools" --with-libtapi="$pwd/toolchain"
+cd "cctools-port-$cctoolsver/cctools" || exit 1
+./configure --prefix="$pwd/toolchain" --bindir="$pwd/toolchain/libexec/cctools" --mandir="$pwd/toolchain/share/cctools" --with-libtapi="$pwd/toolchain" --enable-silent-rules
 make -j"$(nproc)"
 make install
 )
 
 printf "Building ldid\n\n"
-curl -# -L https://github.com/ProcursusTeam/ldid/archive/refs/tags/v2.1.5-procursus7.tar.gz | tar xz
+ldidver="2.1.5-procursus7"
+curl -# -L "https://github.com/ProcursusTeam/ldid/archive/refs/tags/v$ldidver.tar.gz" | tar xz
 (
-cd ldid-2.1.5-procursus7 || exit 1
+cd "ldid-$ldidver" || exit 1
 make CXX=clang++
 mkdir -p "$pwd/toolchain/bin"
 cp ldid "$pwd/toolchain/bin"
+cp docs/ldid.1 "$pwd/toolchain/share/cctools/man1"
 )
 )
 
