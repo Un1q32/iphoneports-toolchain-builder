@@ -5,16 +5,16 @@ case "$0" in *++) cc='clang++ -stdlib=libstdc++' ;; esac
 target="${0##*/}"
 target="${target%-*}"
 
-sdk="${_SDK:-$("$target-sdkpath")}"
+[ -z "$_SDK" ] && _SDK="$("$target-sdkpath")"
 [ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
 
-[ -d "$sdk/var/usr/include" ] && includeflags="-I$sdk/var/usr/include"
-[ -d "$sdk/var/usr/lib" ] && libflags="-L$sdk/var/usr/lib"
+[ -d "$_SDK/var/usr/include" ] && includeflags="-I$_SDK/var/usr/include"
+[ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
 
 exec ${cc:-clang} \
     -target "$target" \
     --no-default-config \
-    -isysroot "$sdk" \
+    -isysroot "$_SDK" \
     "$includeflags" \
     "$libflags" \
     -Wno-unused-command-line-argument \
