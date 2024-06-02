@@ -14,7 +14,14 @@ fi
 [ "${0%/*}" = "$0" ] && scriptroot="." || scriptroot="${0%/*}"
 pwd="$PWD"
 
+# Move the old SDKs out of the way
+[ -d "$pwd/toolchain/share/iphoneports" ] && mv "$pwd/toolchain/share/iphoneports" "$scriptroot/iphoneports-sdks"
+
 rm -rf "$pwd/toolchain" "$scriptroot/build"
+mkdir -p "$pwd/toolchain/share"
+
+# Put the old SDKs back
+[ -d "$scriptroot/iphoneports-sdks" ] && mv "$scriptroot/iphoneports-sdks" "$pwd/toolchain/share/iphoneports"
 
 (
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
