@@ -18,6 +18,6 @@ exec ${cc:-clang} \
     "$includeflags" \
     "$libflags" \
     -Wno-unused-command-line-argument \
-    -mlinker-version=907 \
+    -mlinker-version=951.9 \
     "$minver" \
     "$@"

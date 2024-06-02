@@ -35,7 +35,7 @@ INSTALLPREFIX="$pwd/toolchain" CC=clang CXX=clang++ ./build.sh
 )
 
 printf "Building cctools-port\n\n"
-cctoolsver="1009.2-ld64-907"
+cctoolsver="1010.6-ld64-951.9"
 curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
