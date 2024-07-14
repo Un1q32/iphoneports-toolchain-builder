@@ -9,7 +9,7 @@
 - libstdc++ or libc++ with C++20 support
 - Systems with musl require musl-fts
 
-## Setup
+## Usage
 
 ```sh
 ./build.sh [targets...]
