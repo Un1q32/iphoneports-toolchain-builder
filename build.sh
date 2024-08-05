@@ -15,13 +15,13 @@ fi
 pwd="$PWD"
 
 # Move the old SDKs out of the way
-[ -d "$pwd/toolchain/share/iphoneports" ] && mv "$pwd/toolchain/share/iphoneports" "$scriptroot/iphoneports-sdks"
+[ -d "$pwd/ios-toolchain/share/iphoneports" ] && mv "$pwd/ios-toolchain/share/iphoneports" "$scriptroot/iphoneports-sdks"
 
-rm -rf "$pwd/toolchain" "$scriptroot/build"
-mkdir -p "$pwd/toolchain/share"
+rm -rf "$pwd/ios-toolchain" "$scriptroot/build"
+mkdir -p "$pwd/ios-toolchain/share"
 
 # Put the old SDKs back
-[ -d "$scriptroot/iphoneports-sdks" ] && mv "$scriptroot/iphoneports-sdks" "$pwd/toolchain/share/iphoneports"
+[ -d "$scriptroot/iphoneports-sdks" ] && mv "$scriptroot/iphoneports-sdks" "$pwd/ios-toolchain/share/iphoneports"
 
 (
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
@@ -30,7 +30,7 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar xz
 (
 cd "apple-libtapi-$tapiver" || exit 1
-INSTALLPREFIX="$pwd/toolchain" CC=clang CXX=clang++ ./build.sh
+INSTALLPREFIX="$pwd/ios-toolchain" CC=clang CXX=clang++ ./build.sh
 ./install.sh
 )
 
@@ -39,7 +39,7 @@ cctoolsver="1010.6-ld64-951.9"
 curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
-./configure --prefix="$pwd/toolchain" --bindir="$pwd/toolchain/libexec/cctools" --mandir="$pwd/toolchain/share/cctools" --with-libtapi="$pwd/toolchain" --enable-silent-rules
+./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --enable-silent-rules
 make -j"$(nproc)"
 make install
 )
@@ -50,16 +50,16 @@ curl -# -L "https://github.com/ProcursusTeam/ldid/archive/refs/tags/v$ldidver.ta
 (
 cd "ldid-$ldidver" || exit 1
 make CXX=clang++
-mkdir -p "$pwd/toolchain/bin"
-cp ldid "$pwd/toolchain/bin"
-cp docs/ldid.1 "$pwd/toolchain/share/cctools/man1"
+mkdir -p "$pwd/ios-toolchain/bin"
+cp ldid "$pwd/ios-toolchain/bin"
+cp docs/ldid.1 "$pwd/ios-toolchain/share/cctools/man1"
 )
 )
 
-cp -a "$scriptroot"/files/* "$pwd/toolchain"
+cp -a "$scriptroot"/files/* "$pwd/ios-toolchain"
 
 (
-cd "$pwd/toolchain" || exit 1
+cd "$pwd/ios-toolchain" || exit 1
 "$STRIP" libexec/cctools/*
 for arch in arm i386 ppc ppc64 x86_64; do
     "$STRIP" "libexec/as/$arch/as"
