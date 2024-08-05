@@ -1,5 +1,5 @@
 #!/bin/sh -e
-{ command -v clang > /dev/null 2>&1 && command -v clang++ > /dev/null 2>&1; } || { printf "clang and clang++ are required to build this\n"; exit 1; }
+{ command -v clang > /dev/null 2>&1 && command -v clang++ > /dev/null 2>&1 && command -v llvm-config > /dev/null 2>&1; } || { printf "clang, clang++, and llvm-config are required to build this\n"; exit 1; }
 
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
@@ -43,6 +43,11 @@ cd "cctools-port-$cctoolsver/cctools" || exit 1
 make -j"$(nproc)"
 make install
 )
+
+if [ "$(uname -s)" != "Darwin" ]; then
+    mkdir -p "$pwd/ios-toolchain/libexec/lib"
+    ln -s "$(llvm-config --libdir)/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
+fi
 
 printf "Building ldid\n\n"
 ldidver="2.1.5-procursus7"
