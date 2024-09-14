@@ -37,6 +37,7 @@ INSTALLPREFIX="$pwd/ios-toolchain" CC=clang CXX=clang++ ./build.sh
 printf "Building cctools-port\n\n"
 cctoolsver="1010.6-ld64-951.9"
 curl -# -L "https://github.com/tpoechtrager/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
+cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
 ./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --enable-silent-rules
@@ -50,8 +51,8 @@ if [ "$(uname -s)" != "Darwin" ]; then
 fi
 
 printf "Building ldid\n\n"
-ldidver="2.1.5-procursus7"
-curl -# -L "https://github.com/ProcursusTeam/ldid/archive/refs/tags/v$ldidver.tar.gz" | tar xz
+ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
+curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
 (
 cd "ldid-$ldidver" || exit 1
 make CXX=clang++
