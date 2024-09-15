@@ -36,7 +36,7 @@ INSTALLPREFIX="$pwd/ios-toolchain" CC=clang CXX=clang++ ./build.sh
 
 printf "Building cctools-port\n\n"
 cctoolsver="1010.6-ld64-951.9"
-curl -# -L "https://github.com/tpoechtrager/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
+curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar xz
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
