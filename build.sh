@@ -1,6 +1,8 @@
 #!/bin/sh -e
 { command -v clang > /dev/null 2>&1 && command -v clang++ > /dev/null 2>&1 && command -v llvm-config > /dev/null 2>&1; } || { printf "clang, clang++, and llvm-config are required to build this\n"; exit 1; }
 
+command -v nproc > /dev/null 2>&1 && JOBS="$(nproc)" || JOBS=1
+
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
         STRIP="llvm-strip"
@@ -41,7 +43,7 @@ cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
 ./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --enable-silent-rules
-make -j"$(nproc)"
+make -j"$JOBS"
 make install
 )
 
