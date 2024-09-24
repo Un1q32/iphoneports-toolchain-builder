@@ -1,6 +1,14 @@
 #!/bin/sh
 
-case "$0" in *++) cc='clang++ -stdlib=libstdc++' ;; esac
+clangxx() {
+    if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
+        clang++ -nostdinc++ -nostdlib++ -isystem "$_SDK/var/usr/include/c++/v1" -lc++ "$@"
+    else
+        clang++ -stdlib=libstdc++ "$@"
+    fi
+}
+
+case "$0" in *++) cc='clangxx' ;; esac
 
 target="${0##*/}"
 target="${target%-*}"
@@ -11,7 +19,7 @@ target="${target%-*}"
 [ -d "$_SDK/var/usr/include" ] && includeflags="-I$_SDK/var/usr/include"
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
 
-exec ${cc:-clang} \
+${cc:-clang} \
     -target "$target" \
     --no-default-config \
     -isysroot "$_SDK" \
