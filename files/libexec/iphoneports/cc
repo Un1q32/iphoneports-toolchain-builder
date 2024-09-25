@@ -16,14 +16,13 @@ target="${target%-*}"
 [ -z "$_SDK" ] && _SDK="$("$target-sdkpath")"
 [ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
 
-[ -d "$_SDK/var/usr/include" ] && includeflags="-isystem$_SDK/var/usr/include"
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
 
 ${cc:-clang} \
     -target "$target" \
     --no-default-config \
     -isysroot "$_SDK" \
-    "$includeflags" \
+    -isystem "$_SDK/var/usr/include" \
     "$libflags" \
     -Wno-unused-command-line-argument \
     -mlinker-version=951.9 \
