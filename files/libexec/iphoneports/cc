@@ -16,7 +16,7 @@ target="${target%-*}"
 [ -z "$_SDK" ] && _SDK="$("$target-sdkpath")"
 [ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
 
-[ -d "$_SDK/var/usr/include" ] && includeflags="-I$_SDK/var/usr/include"
+[ -d "$_SDK/var/usr/include" ] && includeflags="-isystem$_SDK/var/usr/include"
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
 
 ${cc:-clang} \
