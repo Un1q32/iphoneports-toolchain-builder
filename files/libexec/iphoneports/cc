@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=1090
 
 clangxx() {
     if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
@@ -14,9 +15,8 @@ target="${0##*/}"
 target="${target%-*}"
 
 [ -z "$_SDK" ] && _SDK="$("$target-sdkpath")"
-[ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && minver="$(cat "${0%/*}/../etc/iphoneports/$target.cfg")"
-
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
+[ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && . "${0%/*}/../etc/iphoneports/$target.cfg"
 
 ${cc:-clang} \
     -target "$target" \
@@ -26,5 +26,4 @@ ${cc:-clang} \
     "$libflags" \
     -Wno-unused-command-line-argument \
     -mlinker-version=951.9 \
-    "$minver" \
     "$@"
