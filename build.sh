@@ -49,7 +49,9 @@ make install
 
 if [ "$(uname -s)" != "Darwin" ]; then
     mkdir -p "$pwd/ios-toolchain/libexec/lib"
-    ln -s "$(llvm-config --libdir)/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
+    llvmdir=$(llvm-config --libdir)
+    ln -s "$llvmdir/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
+    ln -s "$llvmdir/$(readlink "$llvmdir/libLLVM.so")" "$pwd/ios-toolchain/libexec/lib"
 fi
 
 printf "Building ldid\n\n"
