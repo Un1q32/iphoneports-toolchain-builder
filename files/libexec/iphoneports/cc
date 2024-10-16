@@ -3,7 +3,7 @@
 
 clangxx() {
     if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
-        clang++ -nostdinc++ -nostdlib++ -isystem "$_SDK/var/usr/include/c++/v1" -lc++ "$@"
+        clang++ -stdlib=libc++ "$@"
     else
         clang++ -stdlib=libstdc++ "$@"
     fi
@@ -23,6 +23,7 @@ ${cc:-clang} \
     --no-default-config \
     -isysroot "$_SDK" \
     -isystem "$_SDK/var/usr/include" \
+    -cxx-isystem "$_SDK/var/usr/include/c++/v1" \
     "$libflags" \
     -Wno-unused-command-line-argument \
     -mlinker-version=951.9 \
