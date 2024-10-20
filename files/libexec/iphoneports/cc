@@ -25,6 +25,6 @@ ${cc:-clang} \
     -isystem "$_SDK/var/usr/include" \
     -cxx-isystem "$_SDK/var/usr/include/c++/v1" \
     "$libflags" \
-    -Wno-unused-command-line-argument \
     -mlinker-version=951.9 \
-    "$@"
+    "$@" \
+    -Wno-unused-command-line-argument
