@@ -21,7 +21,7 @@ fi
 
 command -v ccache > /dev/null 2>&1 && ccache='ccache'
 
-"$ccache" "$cc" \
+exec "$ccache" "$cc" \
     -target "$target" \
     -isysroot "$_SDK" \
     -stdlib="$stdlib" \
