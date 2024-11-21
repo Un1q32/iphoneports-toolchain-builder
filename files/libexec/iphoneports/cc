@@ -1,15 +1,10 @@
 #!/bin/sh
 # shellcheck disable=1090
 
-clangxx() {
-    if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
-        clang++ -stdlib=libc++ "$@"
-    else
-        clang++ -stdlib=libstdc++ "$@"
-    fi
-}
-
-case "$0" in *++) cc='clangxx' ;; esac
+case "$0" in
+    *++) cc="${0%/*}/../share/llvm/bin/clang++" ;;
+    *)   cc="${0%/*}/../share/llvm/bin/clang"   ;;
+esac
 
 target="${0##*/}"
 target="${target%-*}"
@@ -18,10 +13,18 @@ target="${target%-*}"
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
 [ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && . "${0%/*}/../etc/iphoneports/$target.cfg"
 
-${cc:-clang} \
+if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
+    stdlib=libc++
+else
+    stdlib=libstdc++
+fi
+
+command -v ccache > /dev/null 2>&1 && ccache='ccache'
+
+"$ccache" "$cc" \
     -target "$target" \
-    --no-default-config \
     -isysroot "$_SDK" \
+    -stdlib="$stdlib" \
     -isystem "$_SDK/var/usr/include" \
     -cxx-isystem "$_SDK/var/usr/include/c++/v1" \
     "$libflags" \

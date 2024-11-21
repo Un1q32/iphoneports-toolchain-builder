@@ -1,0 +1,14 @@
+#!/bin/sh
+llvmdir="${0%/*}/.."
+llvmdir="$(realpath "$llvmdir")"
+case $* in
+    --libdir)
+        printf '%s/lib\n' "$llvmdir"
+    ;;
+    --includedir)
+        printf '%s/include\n' "$llvmdir"
+    ;;
+    *)
+        exit 1
+    ;;
+esac
