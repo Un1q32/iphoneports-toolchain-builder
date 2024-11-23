@@ -47,7 +47,7 @@ cd build || exit 1
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && cmakelto='-DLLVM_ENABLE_LTO=Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && cmakeld='-DLLVM_ENABLE_LLD=ON'
-cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/ios-toolchain/share/llvm" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers'
+cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/ios-toolchain/share/iphoneports-llvm" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers'
 make -j"$JOBS" install-distribution
 )
 
@@ -56,7 +56,7 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver" || exit 1
-INSTALLPREFIX="$pwd/ios-toolchain" CC="$pwd/ios-toolchain/share/llvm/bin/clang" CXX="$pwd/ios-toolchain/share/llvm/bin/clang++" ./build.sh
+INSTALLPREFIX="$pwd/ios-toolchain" CC="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++" ./build.sh
 ./install.sh
 )
 
@@ -66,15 +66,15 @@ curl -# -L "https://github.com/tpoechtrager/cctools-port/archive/refs/heads/$cct
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
-./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --with-llvm-config="$pwd/ios-toolchain/share/llvm/bin/llvm-config" --enable-silent-rules CC="$pwd/ios-toolchain/share/llvm/bin/clang" CXX="$pwd/ios-toolchain/share/llvm/bin/clang++"
+./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --with-llvm-config="$pwd/ios-toolchain/share/iphoneports-llvm/bin/llvm-config" --enable-silent-rules CC="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++"
 make -j"$JOBS"
 make install
 )
 
 if [ "$(uname -s)" != "Darwin" ]; then
     mkdir -p "$pwd/ios-toolchain/libexec/lib"
-    ln -s "../../share/llvm/lib/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
-    ln -s "../../share/llvm/lib/$(readlink "$pwd/ios-toolchain/share/llvm/lib/libLLVM.so")" "$pwd/ios-toolchain/libexec/lib"
+    ln -s "../../share/iphoneports-llvm/lib/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
+    ln -s "../../share/iphoneports-llvm/lib/$(readlink "$pwd/ios-toolchain/share/iphoneports-llvm/lib/libLLVM.so")" "$pwd/ios-toolchain/libexec/lib"
 fi
 
 printf "Building ldid\n\n"
@@ -82,7 +82,7 @@ ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
 curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
 (
 cd "ldid-$ldidver" || exit 1
-make CXX="$pwd/ios-toolchain/share/llvm/bin/clang++"
+make CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++"
 mkdir -p "$pwd/ios-toolchain/bin"
 cp ldid "$pwd/ios-toolchain/bin"
 cp docs/ldid.1 "$pwd/ios-toolchain/share/cctools/man1"
@@ -114,6 +114,6 @@ if [ -n "$1" ]; then
     done
 fi
 for bin in bin/clang lib/libLLVM.so lib/libLTO.so; do
-    "$STRIP" "$(realpath share/llvm/"$bin")"
+    "$STRIP" "$(realpath share/iphoneports-llvm/"$bin")"
 done
 )
