@@ -4,30 +4,31 @@
 
 ## Requirements
 
-- LLVM+Clang
 - libdispatch-dev and libblocksruntime
 - libstdc++ or libc++ with C++20 support
 - Systems with musl require musl-fts
 
-## Usage
+## Building
 
 ```sh
-./build.sh [targets...]
+git clone https://github.com/Un1q32/ios-toolchain-build.git
+./ios-toolchain-build/build.sh
+export PATH="$PWD/ios-toolchain/bin:$PATH"
 ```
 
-`build.sh` will create a toolchain folder in the currect directory containing the toolchain
+`build.sh` will create an ios-toolchain folder in the currect directory containing the toolchain
 
-You can add a target with `iphoneports-add-target` in `toolchain/bin`, or optionally with the first arguement to `./build.sh`
+### Adding targets
 
-You may have to crate a config file for your target, look in `toolchain/etc/iphoneports` to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
-A config file is just a single line with a clang minimum version arguement, for example `-mios-version-min=3.1` or `-mmacos-version-min=10.6`
+You can download the SDK used for iPhonePorts [here](https://raw.githubusercontent.com/Un1q32/iphoneports-sdk/master/iPhoneOS3.0.sdk.tar.xz), this will allow you to build the packages in https://github.com/Un1q32/iphoneports
 
-### SDK
+SDKs for other versions of iOS can be found at https://invoxiplaygames.uk/sdks or by extracting old Xcode versions
 
-You can download the SDK used for iPhonePorts builds [here](https://github.com/Un1q32/iphoneports-sdk/raw/master/iPhoneOS3.1.sdk.tar.xz)
+Place your extracted SDK in ios-toolchain/share/iphoneports, the SDK should be named after the target it will be used for.
 
-SDKs for other versions of iOS can be found at https://invoxiplaygames.uk/sdks
+For example, if you want to build for armv6-apple-darwin10 with the iPhonePorts iOS 3.0 SDK, you should extract iPhoneOS3.0.sdk.tar.xz, and move the armv6-apple-darwin10 folder to toolchain/share/iphoneports, then run `iphoneports-add-target armv6-apple-darwin10`
 
-Place your extracted SDK in `toolchain/share/iphoneports/`, the SDK should be named after the target it will be used for
+If you want to build for armv7-apple-darwin11 with the iOS 4.3 SDK, you should extract iPhoneOS4.3.sdk.tar.lzma, rename the iPhoneOS4.3.sdk folder to armv7-apple-darwin11, and move the armv7-apple-darwin11 folder to toolchain/share/iphoneports, then run `iphoneports-add-target armv7-apple-darwin11`
 
-For example, if you want to build for `armv6-apple-darwin10` with the iOS 3.1 SDK, you should extract `iPhoneOS3.1.sdk.tar.xz`, rename the `iPhoneOS3.1.sdk` folder to `armv6-apple-darwin10`, and move it to `toolchain/share/iphoneports`
+You may have to crate a config file for your target, look in ios-toolchain/etc/iphoneports to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
+A config file is just a single line shell script that sets arguements to be passed to clang, for example `set -- -mios-version-min=3.0 "$@"` or `set -- -mmacos-version-min=10.6 "$@"`
