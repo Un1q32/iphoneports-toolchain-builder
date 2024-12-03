@@ -23,15 +23,15 @@ scriptroot="$(realpath "$scriptroot")"
 pwd="$PWD"
 
 # Move the old SDKs out of the way
-[ -d "$pwd/ios-toolchain/share/iphoneports" ] && mv "$pwd/ios-toolchain/share/iphoneports" "$scriptroot/iphoneports-sdks"
+[ -d "$pwd/iphoneports-toolchain/share/iphoneports" ] && mv "$pwd/iphoneports-toolchain/share/iphoneports" "$scriptroot/iphoneports-sdks"
 
-rm -rf "$pwd/ios-toolchain" "$scriptroot/build"
-mkdir -p "$pwd/ios-toolchain/share"
+rm -rf "$pwd/iphoneports-toolchain" "$scriptroot/build"
+mkdir -p "$pwd/iphoneports-toolchain/share"
 
 # Put the old SDKs back
-[ -d "$scriptroot/iphoneports-sdks" ] && mv "$scriptroot/iphoneports-sdks" "$pwd/ios-toolchain/share/iphoneports"
+[ -d "$scriptroot/iphoneports-sdks" ] && mv "$scriptroot/iphoneports-sdks" "$pwd/iphoneports-toolchain/share/iphoneports"
 
-cp -a "$scriptroot"/files/* "$pwd/ios-toolchain"
+cp -a "$scriptroot"/files/* "$pwd/iphoneports-toolchain"
 
 (
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
@@ -47,7 +47,7 @@ cd build || exit 1
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && cmakelto='-DLLVM_ENABLE_LTO=Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && cmakeld='-DLLVM_ENABLE_LLD=ON'
-cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/ios-toolchain/share/iphoneports-llvm" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers'
+cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports-llvm" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers'
 make -j"$JOBS" install-distribution
 )
 
@@ -56,7 +56,7 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver" || exit 1
-INSTALLPREFIX="$pwd/ios-toolchain" CC="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++" ./build.sh
+INSTALLPREFIX="$pwd/iphoneports-toolchain" CC="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/clang++" ./build.sh
 ./install.sh
 )
 
@@ -66,31 +66,25 @@ curl -# -L "https://github.com/tpoechtrager/cctools-port/archive/refs/heads/$cct
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
-./configure --prefix="$pwd/ios-toolchain" --bindir="$pwd/ios-toolchain/libexec/cctools" --mandir="$pwd/ios-toolchain/share/cctools" --with-libtapi="$pwd/ios-toolchain" --with-llvm-config="$pwd/ios-toolchain/share/iphoneports-llvm/bin/llvm-config" --enable-silent-rules CC="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++"
+./configure --prefix="$pwd/iphoneports-toolchain" --bindir="$pwd/iphoneports-toolchain/libexec/cctools" --mandir="$pwd/iphoneports-toolchain/share/cctools" --with-libtapi="$pwd/iphoneports-toolchain" --with-llvm-config="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/llvm-config" --enable-silent-rules CC="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/clang++"
 make -j"$JOBS"
 make install
 )
-
-if [ "$(uname -s)" != "Darwin" ]; then
-    mkdir -p "$pwd/ios-toolchain/libexec/lib"
-    ln -s "../../share/iphoneports-llvm/lib/libLTO.so" "$pwd/ios-toolchain/libexec/lib"
-    ln -s "../../share/iphoneports-llvm/lib/$(readlink "$pwd/ios-toolchain/share/iphoneports-llvm/lib/libLLVM.so")" "$pwd/ios-toolchain/libexec/lib"
-fi
 
 printf "Building ldid\n\n"
 ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
 curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
 (
 cd "ldid-$ldidver" || exit 1
-make CXX="$pwd/ios-toolchain/share/iphoneports-llvm/bin/clang++"
-mkdir -p "$pwd/ios-toolchain/bin"
-cp ldid "$pwd/ios-toolchain/bin"
-cp docs/ldid.1 "$pwd/ios-toolchain/share/cctools/man1"
+make CXX="$pwd/iphoneports-toolchain/share/iphoneports-llvm/bin/clang++"
+mkdir -p "$pwd/iphoneports-toolchain/bin"
+cp ldid "$pwd/iphoneports-toolchain/bin"
+cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/cctools/man1"
 )
 )
 
 (
-cd "$pwd/ios-toolchain" || exit 1
+cd "$pwd/iphoneports-toolchain" || exit 1
 "$STRIP" libexec/cctools/*
 for arch in arm i386 ppc ppc64 x86_64; do
     "$STRIP" "libexec/as/$arch/as"
