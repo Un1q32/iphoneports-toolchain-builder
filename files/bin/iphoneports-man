@@ -1,0 +1,2 @@
+#!/bin/sh
+MANPATH="${0%/*}/../share/man:${0%/*}/../share/iphoneports/sdks/*/usr/share/man" exec man "$@"

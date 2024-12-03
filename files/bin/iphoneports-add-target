@@ -7,11 +7,11 @@ if [ -z "$1" ]; then
 fi
 
 for target in "$@"; do
-    for bin in ../libexec/cctools/*; do
+    for bin in ../share/iphoneports/cctools-bin/*; do
         ln -sf "$bin" "$target-${bin##*/}"
     done
-    for bin in ../libexec/iphoneports/*; do
-        ln -sf "$bin" "$target-${bin##*/}"
+    for cc in c++ gcc g++ clang clang++; do
+        ln -sf "$target-cc" "$target-$cc"
     done
-    [ -d "../share/iphoneports/$target" ] || printf "Don't forget to put an sdk for your target at %s\n" "$(realpath "..")/share/iphoneports/$target"
+    [ -d "../share/iphoneports/sdks/$target" ] || printf "Don't forget to put an SDK for your target at %s\n" "$(realpath "..")/share/iphoneports/sdks/$target"
 done

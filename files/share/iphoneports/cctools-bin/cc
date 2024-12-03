@@ -2,8 +2,8 @@
 # shellcheck disable=1090
 
 case "$0" in
-    *++) cc="${0%/*}/../share/llvm/bin/clang++" ;;
-    *)   cc="${0%/*}/../share/llvm/bin/clang"   ;;
+    *++) cc="${0%/*}/../share/iphoneports/bin/clang++" ;;
+    *)   cc="${0%/*}/../share/iphoneports/bin/clang"   ;;
 esac
 
 target="${0##*/}"

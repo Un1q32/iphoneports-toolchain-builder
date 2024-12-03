@@ -11,12 +11,12 @@
 ## Building
 
 ```sh
-git clone https://github.com/Un1q32/ios-toolchain-build.git
-./ios-toolchain-build/build.sh
-export PATH="$PWD/ios-toolchain/bin:$PATH"
+git clone https://github.com/Un1q32/iphoneports-toolchain-build.git
+./iphoneports-toolchain-build/build.sh
+export PATH="$PWD/iphoneports-toolchain/bin:$PATH"
 ```
 
-`build.sh` will create an ios-toolchain folder in the currect directory containing the toolchain
+`build.sh` will create an iphoneports-toolchain folder in the currect directory containing the toolchain
 
 ### Adding targets
 
@@ -24,11 +24,11 @@ You can download the SDK used for iPhonePorts [here](https://raw.githubuserconte
 
 SDKs for other versions of iOS can be found at https://invoxiplaygames.uk/sdks or by extracting old Xcode versions
 
-Place your extracted SDK in ios-toolchain/share/iphoneports, the SDK should be named after the target it will be used for.
+Place your extracted SDK in iphoneports-toolchain/share/iphoneports/sdks, the SDK should be named after the target it will be used for.
 
-For example, if you want to build for armv6-apple-darwin10 with the iPhonePorts iOS 3.0 SDK, you should extract iPhoneOS3.0.sdk.tar.xz, and move the armv6-apple-darwin10 folder to toolchain/share/iphoneports, then run `iphoneports-add-target armv6-apple-darwin10`
+For example, if you want to build for armv6-apple-darwin10 with the iPhonePorts iOS 3.0 SDK, you should extract iPhoneOS3.0.sdk.tar.xz, and move the armv6-apple-darwin10 folder to iphoneports-toolchain/share/iphoneports/sdks, then run `iphoneports-add-target armv6-apple-darwin10`
 
-If you want to build for armv7-apple-darwin11 with the iOS 4.3 SDK, you should extract iPhoneOS4.3.sdk.tar.lzma, rename the iPhoneOS4.3.sdk folder to armv7-apple-darwin11, and move the armv7-apple-darwin11 folder to toolchain/share/iphoneports, then run `iphoneports-add-target armv7-apple-darwin11`
+If you want to build for armv7-apple-darwin11 with the iOS 4.3 SDK, you should extract iPhoneOS4.3.sdk.tar.lzma, rename the iPhoneOS4.3.sdk folder to armv7-apple-darwin11, and move the armv7-apple-darwin11 folder to iphoneports-toolchain/share/iphoneports/sdks, then run `iphoneports-add-target armv7-apple-darwin11`
 
-You may have to crate a config file for your target, look in ios-toolchain/etc/iphoneports to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
+You may have to crate a config file for your target, look in iphoneports-toolchain/etc/iphoneports to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
 A config file is just a single line shell script that sets arguements to be passed to clang, for example `set -- -mios-version-min=3.0 "$@"` or `set -- -mmacos-version-min=10.6 "$@"`
