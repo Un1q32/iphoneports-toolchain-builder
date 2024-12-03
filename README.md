@@ -16,7 +16,7 @@ git clone https://github.com/Un1q32/iphoneports-toolchain-builder.git
 export PATH="$PWD/iphoneports-toolchain/bin:$PATH"
 ```
 
-`build.sh` will create an iphoneports-toolchain folder in the currect directory containing the toolchain
+build.sh will create an iphoneports-toolchain folder in the currect directory containing the toolchain
 
 ### Adding targets
 
