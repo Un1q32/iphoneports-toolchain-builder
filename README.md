@@ -11,8 +11,8 @@
 ## Building
 
 ```sh
-git clone https://github.com/Un1q32/iphoneports-toolchain-build.git
-./iphoneports-toolchain-build/build.sh
+git clone https://github.com/Un1q32/iphoneports-toolchain-builder.git
+./iphoneports-toolchain-builder/build.sh
 export PATH="$PWD/iphoneports-toolchain/bin:$PATH"
 ```
 
