@@ -91,10 +91,10 @@ if [ -n "$1" ]; then
     for target in "$@"; do
         ./bin/iphoneports-add-target "$target"
     done
-    for target in share/iphoneports/sdks/*; do
-        ./bin/iphoneports-add-target "${target##*/}"
-    done
 fi
+for target in share/iphoneports/sdks/*; do
+    ./bin/iphoneports-add-target "${target##*/}"
+done
 cd share/iphoneports || exit 1
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
