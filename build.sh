@@ -102,7 +102,7 @@ done
 for arch in arm i386 ppc ppc64 x86_64; do
     "$STRIP" "libexec/as/$arch/as"
 done
-rm -rf include
+rm -rf include bin/llvm-config
 for lib in lib/*; do
     if [ ! -h "$lib" ] && [ -f "$lib" ]; then
         "$STRIP" "$lib"
