@@ -37,7 +37,7 @@ cp -a "$scriptroot"/files/* "$pwd/iphoneports-toolchain"
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
 
 printf "Building LLVM+Clang\n\n"
-llvmver="19.1.5"
+llvmver="19.1.6"
 curl -# -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvmver/llvm-project-$llvmver.src.tar.xz" | tar -xJ
 mkdir "llvm-project-$llvmver.src/build"
 (
