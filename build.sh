@@ -47,7 +47,7 @@ cd build || exit 1
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && cmakelto='-DLLVM_ENABLE_LTO=Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && cmakeld='-DLLVM_ENABLE_LLD=ON'
-cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen'
+cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen'
 make -j"$JOBS" install-distribution
 )
 
