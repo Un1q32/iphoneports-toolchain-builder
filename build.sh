@@ -108,7 +108,7 @@ for lib in lib/*; do
         "$STRIP" "$lib"
     fi
 done
-for bin in clang llvm-tblgen; do
+for bin in clang llvm-tblgen clang-tblgen; do
     "$STRIP" "$(realpath bin/"$bin")"
 done
 )
