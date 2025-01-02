@@ -71,6 +71,49 @@ make -j"$JOBS"
 make install
 )
 
+printf "Building compiler-rt\n\n"
+mkdir "llvm-project-$llvmver.src/crtbuild"
+(
+cd "llvm-project-$llvmver.src/crtbuild"
+
+ios7srcs="emutls.c extendhfsf2.c truncsfhf2.c"
+ios6srcs="$ios7srcs atomic.c"
+ios3srcs="$ios6srcs"
+ios2srcs="$ios3srcs"
+clang="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang"
+
+for src in $ios2srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
+done
+for src in $ios3srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
+done
+for src in $ios6srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
+done
+for src in $ios7srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
+done
+wait
+
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o
+llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
+mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
+cp libclang_rt.ios.a "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
+)
+
 printf "Building ldid\n\n"
 ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
 curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
