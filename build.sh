@@ -129,6 +129,7 @@ cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 
 (
 cd "$pwd/iphoneports-toolchain" || exit 1
+mkdir -p share/iphoneports/sdks
 if [ -n "$1" ]; then
     printf '\n'
     for target in "$@"; do
