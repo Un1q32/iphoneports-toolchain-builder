@@ -49,6 +49,8 @@ command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && cmakeld='-DLLVM_ENABLE_LLD=ON'
 cmake ../llvm -DCMAKE_BUILD_TYPE=Release "$cmakecc" "$cmakecpp" "$cmakeld" "$cmakelto" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64'
 make -j"$JOBS" install-distribution
+make -j"$JOBS" dsymutil
+mv bin/dsymutil "$pwd/iphoneports-toolchain/share/iphoneports/bin"
 )
 
 printf "Building libtapi\n\n"
@@ -152,7 +154,7 @@ for lib in lib/*; do
         "$STRIP" "$lib"
     fi
 done
-for bin in clang llvm-tblgen clang-tblgen; do
+for bin in clang llvm-tblgen clang-tblgen dsymutil; do
     "$STRIP" "$(realpath bin/"$bin")"
 done
 )
