@@ -78,31 +78,31 @@ mkdir "llvm-project-$llvmver.src/crtbuild"
 (
 cd "llvm-project-$llvmver.src/crtbuild"
 
-ios7srcs="emutls.c extendhfsf2.c truncsfhf2.c"
-ios6srcs="$ios7srcs atomic.c"
-ios3srcs="$ios6srcs"
-ios2srcs="$ios3srcs"
+arm64srcs="emutls.c"
+armv7ssrcs="$arm64srcs atomic.c extendhfsf2.c truncsfhf2.c"
+armv7srcs="$armv7ssrcs"
+armv6srcs="$armv7srcs"
 clang="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang"
 
-for src in $ios2srcs; do
+for src in $armv6srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
 done
-for src in $ios3srcs; do
+for src in $armv7srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
 done
-for src in $ios6srcs; do
+for src in $armv7ssrcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
 done
-for src in $ios7srcs; do
+for src in $arm64srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
