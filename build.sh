@@ -1,12 +1,15 @@
 #!/bin/sh -e
 
-if command -v nproc > /dev/null 2>&1; then
-    JOBS="$(nproc)"
+if command -v nproc > /dev/null; then
+    cpus=$(nproc)
+elif sysctl -n hw.ncpu > /dev/null 2>&1; then
+    cpus=$(sysctl -n hw.ncpu)
 else
-    if ! JOBS="$(sysctl -n hw.ncpu 2> /dev/null)"; then
-        JOBS=1
-    fi
+    cpus=1
 fi
+
+JOBS=$((cpus * 2 / 3))
+[ "$JOBS" = 0 ] && JOBS=1
 
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
