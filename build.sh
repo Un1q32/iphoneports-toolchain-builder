@@ -1,15 +1,17 @@
 #!/bin/sh -e
 
-if command -v nproc > /dev/null; then
-    cpus=$(nproc)
-elif sysctl -n hw.ncpu > /dev/null 2>&1; then
-    cpus=$(sysctl -n hw.ncpu)
-else
-    cpus=1
-fi
+if [ -z "$JOBS" ]; then
+    if command -v nproc > /dev/null; then
+        cpus=$(nproc)
+    elif sysctl -n hw.ncpu > /dev/null 2>&1; then
+        cpus=$(sysctl -n hw.ncpu)
+    else
+        cpus=1
+    fi
 
-JOBS=$((cpus * 2 / 3))
-[ "$JOBS" = 0 ] && JOBS=1
+    JOBS=$((cpus * 2 / 3))
+    [ "$JOBS" = 0 ] && JOBS=1
+fi
 
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
@@ -40,7 +42,7 @@ cp -a "$scriptroot"/files/* "$pwd/iphoneports-toolchain"
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
 
 printf "Building LLVM+Clang\n\n"
-llvmver="19.1.6"
+llvmver="19.1.7"
 curl -# -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvmver/llvm-project-$llvmver.src.tar.xz" | tar -xJ
 mkdir "llvm-project-$llvmver.src/build"
 (
