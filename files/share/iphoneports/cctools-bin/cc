@@ -11,13 +11,14 @@ target="${target%-*}"
 
 [ -z "$_SDK" ] && _SDK="$("$target-sdkpath")"
 [ -d "$_SDK/var/usr/lib" ] && libflags="-L$_SDK/var/usr/lib"
-[ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && . "${0%/*}/../etc/iphoneports/$target.cfg"
 
 if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
     stdlib=libc++
 else
     stdlib=libstdc++
 fi
+
+[ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && . "${0%/*}/../etc/iphoneports/$target.cfg"
 
 command -v ccache > /dev/null 2>&1 && ccache='ccache'
 
