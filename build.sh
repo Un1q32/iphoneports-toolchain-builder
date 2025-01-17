@@ -83,6 +83,8 @@ mkdir "llvm-project-$llvmver.src/crtbuild"
 (
 cd "llvm-project-$llvmver.src/crtbuild"
 
+x64srcs="emutls.c"
+x32srcs="$x64srcs"
 arm64srcs="emutls.c"
 armv7ssrcs="$arm64srcs atomic.c extendhfsf2.c truncsfhf2.c"
 armv7srcs="$armv7ssrcs"
@@ -93,32 +95,51 @@ for src in $armv6srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
 done
 for src in $armv7srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
 done
 for src in $armv7ssrcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
 done
 for src in $arm64srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o
+rm ./*.o
+
+for src in $x32srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/macsysroot" -target i386-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "i386-${src%\.c}.o" &
+done
+for src in $x64srcs; do
+    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
+        sleep 0.1
+    done
+    "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
+done
+wait
+
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o
+rm ./*.o
+
 llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
 mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
-cp libclang_rt.ios.a "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
+cp *.a "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
 )
 
 printf "Building ldid\n\n"
