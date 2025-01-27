@@ -68,8 +68,8 @@ INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneport
 )
 
 printf "Building cctools-port\n\n"
-cctoolsver="1010.6-ld64-951.9"
-curl -# -L "https://github.com/tpoechtrager/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar -xz
+cctoolsver="1021.4-ld64-954.16"
+curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar -xz
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools" || exit 1
@@ -170,9 +170,6 @@ done
 cd share/iphoneports || exit 1
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
-done
-for arch in arm i386 ppc ppc64 x86_64; do
-    "$STRIP" "libexec/as/$arch/as"
 done
 rm -rf include bin/llvm-config
 for lib in lib/*; do

@@ -29,6 +29,6 @@ exec "$ccache" "$cc" \
     -isystem "$_SDK/var/usr/include" \
     -cxx-isystem "$_SDK/var/usr/include/c++/v1" \
     "$libflags" \
-    -mlinker-version=951.9 \
+    -mlinker-version=954.16 \
     "$@" \
     -Wno-unused-command-line-argument
