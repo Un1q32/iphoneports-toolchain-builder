@@ -48,6 +48,7 @@ mkdir "llvm-project-$llvmver.src/build"
 (
 cd "llvm-project-$llvmver.src" || exit 1
 patch -p1 < "$scriptroot/src/enable-tls.patch"
+patch -p1 < "$scriptroot/src/libgcc.patch"
 cd build || exit 1
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && cmakelto='-DLLVM_ENABLE_LTO=Thin'

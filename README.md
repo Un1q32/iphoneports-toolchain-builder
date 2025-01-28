@@ -1,6 +1,6 @@
 # iPhonePorts toolchain builder
 
-> Darwin toolchain focused on older iOS versions, for use with iPhonePorts
+> Darwin toolchain focused on older versions, for use with iPhonePorts
 
 ## Requirements
 
