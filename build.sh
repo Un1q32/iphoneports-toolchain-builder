@@ -44,7 +44,7 @@ cp -a "$scriptroot"/files/* "$pwd/iphoneports-toolchain"
 mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
 
 printf "Building LLVM+Clang\n\n"
-llvmver="20.1.0-rc1"
+llvmver="19.1.7"
 curl -# -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvmver/llvm-project-$llvmver.src.tar.xz" | tar -xJ
 mkdir "llvm-project-$llvmver.src/build"
 (
@@ -118,7 +118,6 @@ for src in $arm64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
-"$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64e-apple-ios12 -xc /dev/null -c -O3 -o nothing.o &
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o 2>/dev/null
@@ -136,7 +135,7 @@ for src in $x64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
-"$clang" -isysroot "$scriptroot/src/macsysroot" -target unknown-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -O3 -o nothing.o &
+"$clang" -isysroot "$scriptroot/src/macsysroot" -target arm64-apple-macos11.0 -xc /dev/null -c -O3 -o nothing.o &
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o 2>/dev/null
