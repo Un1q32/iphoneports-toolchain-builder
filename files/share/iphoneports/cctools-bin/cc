@@ -14,6 +14,7 @@ target="${target%-*}"
 
 if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
     stdlib=libc++
+    includeflags="-stdlib++-isystem$_SDK/var/usr/include/c++/v1"
 else
     stdlib=libstdc++
 fi
@@ -27,7 +28,7 @@ exec "$ccache" "$cc" \
     -isysroot "$_SDK" \
     -stdlib="$stdlib" \
     -isystem "$_SDK/var/usr/include" \
-    -stdlib++-isystem "$_SDK/var/usr/include/c++/v1" \
+    "$includeflags" \
     "$libflags" \
     -mlinker-version=954.16 \
     "$@" \
