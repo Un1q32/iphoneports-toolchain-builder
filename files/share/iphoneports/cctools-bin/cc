@@ -27,7 +27,7 @@ exec "$ccache" "$cc" \
     -isysroot "$_SDK" \
     -stdlib="$stdlib" \
     -isystem "$_SDK/var/usr/include" \
-    -cxx-isystem "$_SDK/var/usr/include/c++/v1" \
+    -stdlib++-isystem "$_SDK/var/usr/include/c++/v1" \
     "$libflags" \
     -mlinker-version=954.16 \
     "$@" \
