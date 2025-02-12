@@ -15,8 +15,10 @@ target="${target%-*}"
 if [ -f "$_SDK/var/usr/lib/libc++.dylib" ]; then
     stdlib=libc++
     includeflags="-stdlib++-isystem$_SDK/var/usr/include/c++/v1"
-else
+elif [ -f "$_SDK/usr/lib/libstdc++.6.dylib" ] || [ -f "$_SDK/usr/lib/libstdc++.6.tbd" ]; then
     stdlib=libstdc++
+else
+    stdlib=libc++
 fi
 
 [ -f "${0%/*}/../etc/iphoneports/$target.cfg" ] && . "${0%/*}/../etc/iphoneports/$target.cfg"
