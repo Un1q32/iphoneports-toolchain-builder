@@ -42,7 +42,7 @@ mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports"
 cp -a "$scriptroot"/files/* "$pwd/iphoneports-toolchain"
 
 (
-mkdir "$scriptroot/build" && cd "$scriptroot/build" || exit 1
+mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
 llvmver="19.1.7"
