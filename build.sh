@@ -49,10 +49,10 @@ llvmver="19.1.7"
 curl -# -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvmver/llvm-project-$llvmver.src.tar.xz" | tar -xJ
 mkdir "llvm-project-$llvmver.src/build"
 (
-cd "llvm-project-$llvmver.src" || exit 1
+cd "llvm-project-$llvmver.src"
 patch -p1 < "$scriptroot/src/enable-tls.patch"
 patch -p1 < "$scriptroot/src/libgcc.patch"
-cd build || exit 1
+cd build
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && lld=ON
@@ -66,7 +66,7 @@ printf "Building libtapi\n\n"
 tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
-cd "apple-libtapi-$tapiver" || exit 1
+cd "apple-libtapi-$tapiver"
 INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" ./build.sh
 ./install.sh
 )
@@ -76,7 +76,7 @@ cctoolsver="1021.4-ld64-954.16"
 curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar -xz
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
-cd "cctools-port-$cctoolsver/cctools" || exit 1
+cd "cctools-port-$cctoolsver/cctools"
 ./configure --prefix="$pwd/iphoneports-toolchain/share/iphoneports" --bindir="$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin" --with-libtapi="$pwd/iphoneports-toolchain/share/iphoneports" --with-llvm-config="$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config" --enable-silent-rules CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++"
 make -j"$JOBS"
 make install
@@ -151,7 +151,7 @@ printf "Building ldid\n\n"
 ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
 curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
 (
-cd "ldid-$ldidver" || exit 1
+cd "ldid-$ldidver"
 make CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++"
 mkdir -p "$pwd/iphoneports-toolchain/bin" "$pwd/iphoneports-toolchain/share/man/man1"
 "$STRIP" ldid
@@ -161,7 +161,7 @@ cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 )
 
 (
-cd "$pwd/iphoneports-toolchain" || exit 1
+cd "$pwd/iphoneports-toolchain"
 mkdir -p share/iphoneports/sdks
 if [ -n "$1" ]; then
     printf '\n'
@@ -172,7 +172,7 @@ fi
 for target in share/iphoneports/sdks/*; do
     ./bin/iphoneports-add-target "${target##*/}"
 done
-cd share/iphoneports || exit 1
+cd share/iphoneports
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
 done
