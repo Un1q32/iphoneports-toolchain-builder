@@ -20,7 +20,7 @@ build.sh will create an iphoneports-toolchain folder in the currect directory co
 
 ### Adding targets
 
-You can download the SDKs used for iPhonePorts [here](https://github.com/Un1q32/iphoneports-sdk), this will allow you to build the packages in https://github.com/Un1q32/iphoneports
+You can download the SDKs used for iPhonePorts [here](https://github.com/Un1q32/iphoneports-sdk), these can be used to build the packages in https://github.com/Un1q32/iphoneports
 
 SDKs for other versions of iOS can be found at https://invoxiplaygames.uk/sdks or by extracting old Xcode versions
 
