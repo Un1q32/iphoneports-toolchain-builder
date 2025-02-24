@@ -20,7 +20,7 @@ build.sh will create an iphoneports-toolchain folder in the currect directory co
 
 ### Adding targets
 
-You can download the SDK used for iPhonePorts [here](https://raw.githubusercontent.com/Un1q32/iphoneports-sdk/master/iPhoneOS3.0.sdk.tar.xz), this will allow you to build the packages in https://github.com/Un1q32/iphoneports
+You can download the SDKs used for iPhonePorts [here](https://github.com/Un1q32/iphoneports-sdk), this will allow you to build the packages in https://github.com/Un1q32/iphoneports
 
 SDKs for other versions of iOS can be found at https://invoxiplaygames.uk/sdks or by extracting old Xcode versions
 
@@ -28,7 +28,5 @@ Place your extracted SDK in iphoneports-toolchain/share/iphoneports/sdks, the SD
 
 For example, if you want to build for armv6-apple-darwin10 with the iPhonePorts iOS 3.0 SDK, you should extract iPhoneOS3.0.sdk.tar.xz, and move the armv6-apple-darwin10 folder to iphoneports-toolchain/share/iphoneports/sdks, then run `iphoneports-add-target armv6-apple-darwin10`
 
-If you want to build for armv7-apple-darwin11 with the iOS 4.3 SDK, you should extract iPhoneOS4.3.sdk.tar.lzma, rename the iPhoneOS4.3.sdk folder to armv7-apple-darwin11, and move the armv7-apple-darwin11 folder to iphoneports-toolchain/share/iphoneports/sdks, then run `iphoneports-add-target armv7-apple-darwin11`
-
 You may have to crate a config file for your target, look in iphoneports-toolchain/etc/iphoneports to see if your target already has a config file, if it doesn't then try modifying one of the existing ones.
-A config file is just a single line shell script that sets arguements to be passed to clang, for example `set -- -mios-version-min=3.0 "$@"` or `set -- -mmacos-version-min=10.6 "$@"`
+A config file is just a single line shell script that sets arguements to be passed to clang, for example `set -- -mios-version-min=3.0 "$@"` or `set -- -mmacos-version-min=10.5 "$@"`
