@@ -86,7 +86,7 @@ mkdir "llvm-project-$llvmver.src/crtbuild"
 (
 cd "llvm-project-$llvmver.src/crtbuild"
 
-x64srcs="emutls.c eprintf.c"
+x64srcs="emutls.c eprintf.c int_util.c"
 x32srcs="$x64srcs atomic.c"
 
 arm64srcs="emutls.c"
