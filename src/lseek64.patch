@@ -1,0 +1,10 @@
+--- src/src/llvm/lib/Support/raw_ostream.cpp.orig
++++ src/src/llvm/lib/Support/raw_ostream.cpp
+@@ -10,6 +10,7 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
++#define _LARGEFILE64_SOURCE
+ #include "llvm/Support/raw_ostream.h"
+ #include "llvm/ADT/STLExtras.h"
+ #include "llvm/ADT/StringExtras.h"

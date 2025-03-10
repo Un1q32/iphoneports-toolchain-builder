@@ -66,6 +66,7 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver"
+patch -p1 < "$scriptroot/src/lseek64.patch"
 INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" ./build.sh
 ./install.sh
 )
@@ -119,11 +120,12 @@ for src in $arm64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
-"$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64e-apple-ios12 -xc /dev/null -c -O3 -o nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o 2>/dev/null
-rm ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o builtins.a ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/ar" rc nothing.a /dev/null
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/lipo" -create builtins.a -arch arm64e nothing.a -output libclang_rt.ios.a
+rm ./*.o nothing.a builtins.a
 
 for src in $x32srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
@@ -137,11 +139,12 @@ for src in $x64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
-"$clang" -isysroot "$scriptroot/src/macsysroot" -target unknown-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -O3 -o nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o 2>/dev/null
-rm ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o builtins.a ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/ar" rc nothing.a /dev/null
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/lipo" -create builtins.a -arch arm64e nothing.a -arch arm64 nothing.a -output libclang_rt.osx.a
+rm ./*.o nothing.a builtins.a
 
 llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
 mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"
