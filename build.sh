@@ -14,6 +14,7 @@ case $JOBS in
         [ "$JOBS" = 0 ] && JOBS=1
     ;;
 esac
+export JOBS
 
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
