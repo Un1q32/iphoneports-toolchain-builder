@@ -175,7 +175,7 @@ if [ -n "$1" ]; then
     done
 fi
 for target in share/iphoneports/sdks/*; do
-    ./bin/iphoneports-add-target "${target##*/}"
+    [ "$target" != "share/iphoneports/sdks/*" ] && ./bin/iphoneports-add-target "${target##*/}"
 done
 cd share/iphoneports
 for bin in cctools-bin/*; do
