@@ -12,9 +12,9 @@ case $JOBS in
 
         JOBS=$((cpus * 2 / 3))
         [ "$JOBS" = 0 ] && JOBS=1
+        export JOBS
     ;;
 esac
-export JOBS
 
 if [ -z "$STRIP" ]; then
     if command -v llvm-strip > /dev/null 2>&1; then
