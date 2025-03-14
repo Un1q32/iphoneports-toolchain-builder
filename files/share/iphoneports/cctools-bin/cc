@@ -32,4 +32,5 @@ exec $ccache "$cc" \
     "$libflags" \
     -mlinker-version=954.16 \
     "$@" \
-    -Wno-unused-command-line-argument
+    -Wno-unused-command-line-argument \
+    -Wno-ignored-optimization-argument
