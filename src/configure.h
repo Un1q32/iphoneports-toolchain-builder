@@ -28,22 +28,18 @@
 #define SUPPORT_ARCH_armv5 1
 #define SUPPORT_ARCH_armv6 1
 #define SUPPORT_ARCH_armv7 1
-#define SUPPORT_ARCH_armv7f 1
 #define SUPPORT_ARCH_armv7k 1
 #define SUPPORT_ARCH_armv7s 1
 #define SUPPORT_ARCH_armv6m 1
 #define SUPPORT_ARCH_armv7m 1
 #define SUPPORT_ARCH_armv7em 1
-#define SUPPORT_ARCH_armv8 1
 #define SUPPORT_ARCH_arm64 1
-#define SUPPORT_ARCH_arm64v8 1
 #define SUPPORT_ARCH_arm64e 1
 #define SUPPORT_ARCH_arm64_32 1
-#define SUPPORT_ARCH_riscv 1
 
 #define SUPPORT_APPLE_TV 1
 
-#define ALL_SUPPORTED_ARCHS  "i386 x86_64 x86_64h armv4t armv5 armv6 armv7 armv7f armv7k armv7s armv6m armv7m armv7em armv8 arm64 arm64v8 arm64e arm64_32 riscv (tvOS)"
+#define ALL_SUPPORTED_ARCHS  "i386 x86_64 x86_64h armv4t armv5 armv6 armv7 armv7k armv7s armv6m armv7m armv7em arm64 arm64e arm64_32 (tvOS)"
 
 #define BITCODE_XAR_VERSION "1.0"
 
