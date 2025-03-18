@@ -46,10 +46,10 @@ mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
 llvmver="20.1.1"
-curl -# -L "https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvmver/llvm-project-$llvmver.src.tar.xz" | tar -xJ
-mkdir "llvm-project-$llvmver.src/build"
+curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvmver.tar.gz" | tar -xz
+mkdir "llvm-project-llvmorg-$llvmver/build"
 (
-cd "llvm-project-$llvmver.src"
+cd "llvm-project-llvmorg-$llvmver"
 patch -p1 < "$scriptroot/src/enable-tls.patch"
 patch -p1 < "$scriptroot/src/libgcc.patch"
 cd build
@@ -84,9 +84,9 @@ make install
 )
 
 printf "Building compiler-rt\n\n"
-mkdir "llvm-project-$llvmver.src/crtbuild"
+mkdir "llvm-project-llvmorg-$llvmver/crtbuild"
 (
-cd "llvm-project-$llvmver.src/crtbuild"
+cd "llvm-project-llvmorg-$llvmver/crtbuild"
 
 x64srcs="emutls.c eprintf.c int_util.c"
 x32srcs="$x64srcs atomic.c"
