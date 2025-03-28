@@ -52,6 +52,7 @@ mkdir "llvm-project-llvmorg-$llvmver/build"
 cd "llvm-project-llvmorg-$llvmver"
 patch -p1 < "$scriptroot/src/enable-tls.patch"
 patch -p1 < "$scriptroot/src/libgcc.patch"
+patch -p1 < "$scriptroot/src/tailcall.patch"
 cd build
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
