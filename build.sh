@@ -73,7 +73,7 @@ INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneport
 )
 
 printf "Building cctools-port\n\n"
-cctoolsver="1021.4-ld64-954.16"
+cctoolsver="1024.3-ld64-955.13"
 curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsver.tar.gz" | tar -xz
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
