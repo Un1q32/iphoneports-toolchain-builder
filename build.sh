@@ -22,7 +22,7 @@ if [ -z "$STRIP" ]; then
     elif command -v strip > /dev/null 2>&1; then
         STRIP='strip'
     else
-        STRIP='touch'
+        STRIP='true'
     fi
 fi
 
