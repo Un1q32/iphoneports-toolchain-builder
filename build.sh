@@ -121,12 +121,11 @@ for src in $arm64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
+"$clang" -target arm64e-apple-ios12 -xc /dev/null -c -o arm64e-nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o builtins.a ./*.o
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/ar" rc nothing.a /dev/null
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/lipo" -create builtins.a -arch arm64e nothing.a -output libclang_rt.ios.a
-rm ./*.o nothing.a builtins.a
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o
+rm ./*.o
 
 for src in $x32srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
@@ -140,12 +139,12 @@ for src in $x64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
+"$clang" -target arm64-apple-macos11.0 -xc /dev/null -c -o arm64-nothing.o &
+"$clang" -target arm64e-apple-macos11.0 -xc /dev/null -c -o arm64e-nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o builtins.a ./*.o
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/ar" rc nothing.a /dev/null
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/lipo" -create builtins.a -arch arm64e nothing.a -arch arm64 nothing.a -output libclang_rt.osx.a
-rm ./*.o nothing.a builtins.a
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o
+rm ./*.o
 
 llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
 mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/lib/darwin"

@@ -24,7 +24,6 @@ fi
 command -v ccache > /dev/null 2>&1 && ccache='ccache'
 
 exec $ccache "$cc" \
-    -target "$target" \
     -isysroot "$_SDK" \
     -stdlib="$stdlib" \
     -isystem "$_SDK/var/usr/include" \
@@ -32,5 +31,6 @@ exec $ccache "$cc" \
     "$libflags" \
     -mlinker-version=955.13 \
     "$@" \
+    -target "$target" \
     -Wno-unused-command-line-argument \
     -Wno-ignored-optimization-argument
