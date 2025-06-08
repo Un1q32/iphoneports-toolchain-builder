@@ -121,7 +121,7 @@ for src in $arm64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
-"$clang" -target arm64e-apple-ios12 -xc /dev/null -c -o arm64e-nothing.o &
+"$clang" -target arm64e-apple-ios12 -xc /dev/null -c -o nothing.o &
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o
