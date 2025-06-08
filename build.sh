@@ -57,10 +57,10 @@ cd build
 export PATH="$scriptroot/src/bin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && lld=ON
-cmake ../llvm -DCMAKE_BUILD_TYPE=Release $cmakecc $cmakecpp -DLLVM_ENABLE_LLD="${lld:-OFF}" -DLLVM_ENABLE_LTO="${lto:-OFF}" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_BUILD_TOOLS=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' -DLLVM_DEFAULT_TARGET_TRIPLE="$(cc -dumpmachine)"
+cmake ../llvm -DCMAKE_BUILD_TYPE=Release $cmakecc $cmakecpp -DLLVM_ENABLE_LLD="${lld:-OFF}" -DLLVM_ENABLE_LTO="${lto:-OFF}" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;llvm-lipo;llvm-otool;dsymutil' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' -DLLVM_DEFAULT_TARGET_TRIPLE="$(cc -dumpmachine)"
 make -j"$JOBS" install-distribution
-make -j"$JOBS" dsymutil
-mv bin/dsymutil "$pwd/iphoneports-toolchain/share/iphoneports/bin"
+ln -s llvm-lipo "$pwd/iphoneports-toolchain/share/iphoneports/bin/lipo"
+ln -s llvm-otool "$pwd/iphoneports-toolchain/share/iphoneports/bin/otool"
 )
 
 printf "Building libtapi\n\n"
@@ -181,12 +181,9 @@ for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
 done
 rm -rf include bin/llvm-config
-for lib in lib/*; do
-    if [ ! -h "$lib" ] && [ -f "$lib" ]; then
-        "$STRIP" "$lib"
+for bin in bin/* lib/*; do
+    if [ ! -h "$bin" ] && [ -f "$bin" ]; then
+        "$STRIP" "$bin"
     fi
-done
-for bin in clang llvm-tblgen clang-tblgen dsymutil; do
-    "$STRIP" "$(realpath bin/"$bin")"
 done
 )
