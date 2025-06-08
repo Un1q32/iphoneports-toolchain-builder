@@ -124,7 +124,7 @@ done
 "$clang" -target arm64e-apple-ios12 -xc /dev/null -c -o nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o 2>/dev/null
 rm ./*.o
 
 for src in $x32srcs; do
@@ -142,7 +142,7 @@ done
 "$clang" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -o nothing.o &
 wait
 
-"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o 2>/dev/null
 rm ./*.o
 
 llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
