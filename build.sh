@@ -1,5 +1,5 @@
 #!/bin/sh -e
-# shellcheck disable=SC2086
+# shellcheck disable=2086
 
 case $JOBS in
     ''|*[!0-9]*)
@@ -54,11 +54,11 @@ patch -p1 < "$scriptroot/src/enable-tls.patch"
 patch -p1 < "$scriptroot/src/libgcc.patch"
 patch -p1 < "$scriptroot/src/tailcall.patch"
 cd build
-export PATH="$scriptroot/src/bin:$PATH"
+export PATH="$scriptroot/src/llvmbin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && lld=ON
-cmake ../llvm -DCMAKE_BUILD_TYPE=Release $cmakecc $cmakecpp -DLLVM_ENABLE_LLD="${lld:-OFF}" -DLLVM_ENABLE_LTO="${lto:-OFF}" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;dsymutil;llvm-config' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' -DLLVM_DEFAULT_TARGET_TRIPLE="$(cc -dumpmachine)"
-make -j"$JOBS" install-distribution
+cmake -GNinja ../llvm -DCMAKE_BUILD_TYPE=Release $cmakecc $cmakecpp -DLLVM_ENABLE_LLD="${lld:-OFF}" -DLLVM_ENABLE_LTO="${lto:-OFF}" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;dsymutil;llvm-config' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' -DLLVM_DEFAULT_TARGET_TRIPLE="$(cc -dumpmachine)"
+ninja -j"$JOBS" install-distribution
 )
 
 printf "Building libtapi\n\n"
@@ -66,7 +66,7 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver"
-INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" ./build.sh
+INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" NINJA=1 ./build.sh
 ./install.sh
 )
 
@@ -81,6 +81,7 @@ make -j"$JOBS"
 make install
 ln -s ../cctools-bin/lipo "$pwd/iphoneports-toolchain/share/iphoneports/bin"
 ln -s ../cctools-bin/otool "$pwd/iphoneports-toolchain/share/iphoneports/bin"
+ln -s ../cctools-bin/install_name_tool "$pwd/iphoneports-toolchain/share/iphoneports/bin"
 )
 
 printf "Building compiler-rt\n\n"
@@ -179,7 +180,7 @@ cd share/iphoneports
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
 done
-rm -rf include bin/llvm-config bin/FileCheck
+rm -rf include bin/llvm-config
 for bin in bin/* lib/*; do
     if [ ! -h "$bin" ] && [ -f "$bin" ]; then
         "$STRIP" "$bin"
