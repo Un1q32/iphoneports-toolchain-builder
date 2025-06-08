@@ -1,0 +1,8 @@
+#!/bin/sh
+# just good enough to fool the rust build system
+path="${0%/*}/.."
+if [ "$3" = "iphoneos" ]; then
+    realpath "$path/iossysroot"
+else
+    realpath "$path/macsysroot"
+fi
