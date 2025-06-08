@@ -139,8 +139,7 @@ for src in $x64srcs; do
     done
     "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
-"$clang" -target arm64-apple-macos11.0 -xc /dev/null -c -o arm64-nothing.o &
-"$clang" -target arm64e-apple-macos11.0 -xc /dev/null -c -o arm64e-nothing.o &
+"$clang" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -o nothing.o &
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o
