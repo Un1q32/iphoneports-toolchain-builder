@@ -1,6 +1,11 @@
 #!/bin/sh -e
 # shellcheck disable=2086,2031,2030
 
+if [ "$(uname -s)" = "Darwin" ]; then
+    printf 'Toolchain not supported on Darwin\n'
+    exit 1
+fi
+
 case $JOBS in
     ''|*[!0-9]*)
         if command -v nproc > /dev/null; then
@@ -181,6 +186,7 @@ sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" -e "s|@LLVMCO
 patch -p1 < "$scriptroot/src/legacy-darwin-rust.patch"
 export PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH"
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" CC=clang BOOTSTRAP_SKIP_TARGET_SANITY=1 ./x install -j "$JOBS"
+ln -s "../../../$(readlink ../../../libLLVM.so)" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
 )
 )
 
