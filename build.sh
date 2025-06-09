@@ -186,7 +186,7 @@ sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" -e "s|@LLVMCO
 patch -p1 < "$scriptroot/src/legacy-darwin-rust.patch"
 export PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH"
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" CC=clang BOOTSTRAP_SKIP_TARGET_SANITY=1 ./x install -j "$JOBS"
-ln -s "../../../$(readlink ../../../libLLVM.so)" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
+ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
 )
 )
 
