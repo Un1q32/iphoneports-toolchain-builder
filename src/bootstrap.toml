@@ -15,7 +15,7 @@ target = [
   # "aarch64-apple-darwin",
   # "arm64e-apple-darwin",
   "armv6-apple-ios",
-  # "armv7-apple-ios",
+  "armv7-apple-ios",
   # "armv7s-apple-ios",
   # "aarch64-apple-ios",
   # "arm64e-apple-ios",
