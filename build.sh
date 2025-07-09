@@ -52,7 +52,7 @@ host="$(cc -dumpmachine)"
 mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
-llvmver="20.1.7"
+llvmver="20.1.8"
 curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvmver.tar.gz" | tar -xz
 mkdir "llvm-project-llvmorg-$llvmver/build"
 (
