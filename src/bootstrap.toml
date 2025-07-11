@@ -42,5 +42,5 @@ use-lld = false
 compression-formats = ["gz"]
 compression-profile = "fast"
 
-[target.x86_64-unknown-linux-gnu]
+[target.@HOST@]
 llvm-config = '@LLVMCONFIG@'
