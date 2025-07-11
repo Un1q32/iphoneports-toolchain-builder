@@ -57,9 +57,9 @@ curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvm
 mkdir "llvm-project-llvmorg-$llvmver/build"
 (
 cd "llvm-project-llvmorg-$llvmver"
-patch -p1 < "$scriptroot/src/enable-tls.patch"
-patch -p1 < "$scriptroot/src/libgcc.patch"
-patch -p1 < "$scriptroot/src/tailcall.patch"
+for patch in "$scriptroot/src"/llvm-*.patch; do
+    patch -p1 < "$patch"
+done
 cd build
 export PATH="$scriptroot/src/llvmbin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
@@ -182,7 +182,7 @@ curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar
 (
 cd rustc-*/
 sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
-patch -p1 < "$scriptroot/src/legacy-darwin-rust.patch"
+patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
 export PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH"
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" CC=clang BOOTSTRAP_SKIP_TARGET_SANITY=1 ./x install -j "$JOBS"
 ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
