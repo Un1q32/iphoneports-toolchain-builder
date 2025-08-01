@@ -12,7 +12,7 @@ index 159c17b0af7..b3dc1447bd8 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index 46fcd7d5c51..452de58408b 100644
+index 46fcd7d5c51..a4671018be9 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
 @@ -16,6 +16,8 @@
@@ -42,16 +42,19 @@ index 46fcd7d5c51..452de58408b 100644
              Arm64 | Arm64e | Arm64_32 => "aarch64",
              I386 | I686 => "x86",
              X86_64 | X86_64h => "x86_64",
-@@ -53,6 +57,8 @@ pub(crate) fn target_arch(self) -> Cow<'static, str> {
+@@ -53,8 +57,10 @@ pub(crate) fn target_arch(self) -> Cow<'static, str> {
  
      fn target_cpu(self, abi: TargetAbi) -> &'static str {
          match self {
 +            Armv6 => "arm1176jzf-s",
 +            Armv7 => "cortex-a8",
              Armv7k => "cortex-a8",
-             Armv7s => "swift", // iOS 10 is only supported on iPhone 5 or higher.
+-            Armv7s => "swift", // iOS 10 is only supported on iPhone 5 or higher.
++            Armv7s => "swift",
              Arm64 => match abi {
-@@ -62,11 +68,8 @@ fn target_cpu(self, abi: TargetAbi) -> &'static str {
+                 TargetAbi::Normal => "apple-a7",
+                 TargetAbi::Simulator => "apple-a12",
+@@ -62,21 +68,18 @@ fn target_cpu(self, abi: TargetAbi) -> &'static str {
              },
              Arm64e => "apple-a12",
              Arm64_32 => "apple-s4",
@@ -60,12 +63,15 @@ index 46fcd7d5c51..452de58408b 100644
 -            // https://github.com/llvm/llvm-project/blob/01f924d0e37a5deae51df0d77e10a15b63aa0c0f/clang/lib/Driver/ToolChains/Arch/X86.cpp#L79-L82
 -            I386 | I686 => "penryn",
 -            X86_64 => "penryn",
-+            I386 | I686 => "yonah",
++            I386 | I686 => "pentium-m",
 +            X86_64 => "core2",
              // Note: `core-avx2` is slightly more advanced than `x86_64h`, see
              // comments (and disabled features) in `x86_64h_apple_darwin` for
-             // details. It is a higher baseline then `penryn` however.
-@@ -76,7 +79,7 @@ fn target_cpu(self, abi: TargetAbi) -> &'static str {
+-            // details. It is a higher baseline then `penryn` however.
++            // details. It is a higher baseline then `core2` however.
+             X86_64h => "core-avx2",
+         }
+     }
  
      fn stack_probes(self) -> StackProbeType {
          match self {
@@ -115,8 +121,8 @@ index 46fcd7d5c51..452de58408b 100644
              ("ios", "aarch64", "macabi") => (14, 0, 0),
              ("ios", "aarch64", "sim") => (14, 0, 0),
              ("ios", _, _) if target.llvm_target.starts_with("arm64e") => (14, 0, 0),
-+            ("ios", _, _) if target.llvm_target.starts_with("armv7") => (3, 0, 0),
 +            ("ios", _, _) if target.llvm_target.starts_with("armv7s") => (6, 0, 0),
++            ("ios", _, _) if target.llvm_target.starts_with("armv7") => (3, 0, 0),
 +            ("macos", _, _) if target.llvm_target.starts_with("x86_64h") => (10, 8, 0),
              // Mac Catalyst defaults to 13.1 in Clang.
              ("ios", _, "macabi") => (13, 1, 0),
