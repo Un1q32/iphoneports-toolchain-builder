@@ -36,7 +36,8 @@ scriptroot="$(realpath "$scriptroot")"
 pwd="$PWD"
 
 # Move the old SDKs out of the way
-[ -d "$pwd/iphoneports-toolchain/share/iphoneports/sdks" ] && mv "$pwd/iphoneports-toolchain/share/iphoneports/sdks" "$scriptroot/iphoneports-sdks"
+[ -d "$pwd/iphoneports-toolchain/share/iphoneports/sdks" ] &&
+    mv "$pwd/iphoneports-toolchain/share/iphoneports/sdks" "$scriptroot/iphoneports-sdks"
 
 rm -rf "$pwd/iphoneports-toolchain" "$scriptroot/build"
 mkdir -p "$pwd/iphoneports-toolchain/share/iphoneports"
@@ -64,7 +65,19 @@ cd build
 export PATH="$scriptroot/src/llvmbin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && lld=ON
-cmake -GNinja ../llvm -DCMAKE_BUILD_TYPE=Release $cmakecc $cmakecpp -DLLVM_ENABLE_LLD="${lld:-OFF}" -DLLVM_ENABLE_LTO="${lto:-OFF}" -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" -DLLVM_LINK_LLVM_DYLIB=ON -DCLANG_LINK_CLANG_DYLIB=OFF -DLLVM_ENABLE_PROJECTS='clang' -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;dsymutil;llvm-config;llvm-objcopy' -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' -DLLVM_DEFAULT_TARGET_TRIPLE="$host"
+cmake -GNinja ../llvm \
+    -DCMAKE_BUILD_TYPE=Release \
+    $cmakecc \
+    $cmakecpp \
+    -DLLVM_ENABLE_LLD="${lld:-OFF}" \
+    -DLLVM_ENABLE_LTO="${lto:-OFF}" \
+    -DCMAKE_INSTALL_PREFIX="$pwd/iphoneports-toolchain/share/iphoneports" \
+    -DLLVM_LINK_LLVM_DYLIB=ON \
+    -DCLANG_LINK_CLANG_DYLIB=OFF \
+    -DLLVM_ENABLE_PROJECTS='clang' \
+    -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;dsymutil;llvm-config;llvm-objcopy' \
+    -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' \
+    -DLLVM_DEFAULT_TARGET_TRIPLE="$host"
 ninja -j"$JOBS" install-distribution
 ninja -j"$JOBS" FileCheck
 mv bin/FileCheck "$pwd/iphoneports-toolchain/share/iphoneports/bin"
@@ -75,7 +88,11 @@ tapiver="1300.6.5"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver"
-INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" NINJA=1 ./build.sh
+INSTALLPREFIX="$pwd/iphoneports-toolchain/share/iphoneports" \
+    CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" \
+    CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++" \
+    NINJA=1 \
+    ./build.sh
 ./install.sh
 )
 
@@ -85,7 +102,14 @@ curl -# -L "https://github.com/Un1q32/cctools-port/archive/refs/heads/$cctoolsve
 cp ../src/configure.h "cctools-port-$cctoolsver/cctools/ld64/src"
 (
 cd "cctools-port-$cctoolsver/cctools"
-./configure --prefix="$pwd/iphoneports-toolchain/share/iphoneports" --bindir="$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin" --with-libtapi="$pwd/iphoneports-toolchain/share/iphoneports" --with-llvm-config="$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config" --enable-silent-rules CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++"
+./configure \
+    --prefix="$pwd/iphoneports-toolchain/share/iphoneports" \
+    --bindir="$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin" \
+    --with-libtapi="$pwd/iphoneports-toolchain/share/iphoneports" \
+    --with-llvm-config="$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config" \
+    --enable-silent-rules \
+    CC="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang" \
+    CXX="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang++"
 make -j"$JOBS"
 make install
 ln -s ../cctools-bin/lipo "$pwd/iphoneports-toolchain/share/iphoneports/bin"
@@ -181,7 +205,9 @@ rustver="1.88.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ
 (
 cd rustc-*/
-sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
+sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
+    -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" \
+    -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
 patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
 export PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH"
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" CC=clang BOOTSTRAP_SKIP_TARGET_SANITY=1 ./x install -j "$JOBS"
