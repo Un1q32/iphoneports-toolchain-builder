@@ -201,7 +201,7 @@ case $host in
     (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
 esac
 printf "Building rust\n\n"
-rustver="1.88.0"
+rustver="1.89.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ
 (
 cd rustc-*/
