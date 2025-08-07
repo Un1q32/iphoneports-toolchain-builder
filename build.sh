@@ -65,6 +65,37 @@ cd build
 export PATH="$scriptroot/src/llvmbin:$PATH"
 command -v clang >/dev/null && command -v clang++ >/dev/null && cmakecc='-DCMAKE_C_COMPILER=clang' && cmakecpp='-DCMAKE_CXX_COMPILER=clang++' && lto='Thin'
 [ "$(uname -s)" != "Darwin" ] && command -v ld.lld >/dev/null && lld=ON
+
+llvm_components() {
+    for component in \
+    LLVM \
+    LTO \
+    clang \
+    llvm-headers \
+    clang-resource-headers \
+    llvm-tblgen \
+    clang-tblgen \
+    dsymutil \
+    llvm-config \
+    llvm-objcopy \
+    llvm-objdump \
+    llvm-cov \
+    llvm-nm \
+    llvm-profdata \
+    llvm-readobj \
+    llvm-size \
+    llvm-strip \
+    llvm-ar \
+    llvm-as \
+    llvm-dis \
+    llvm-link \
+    llc \
+    opt \
+    ; do
+        printf '%s;' "$component"
+    done
+}
+
 cmake -GNinja ../llvm \
     -DCMAKE_BUILD_TYPE=Release \
     $cmakecc \
@@ -75,7 +106,7 @@ cmake -GNinja ../llvm \
     -DLLVM_LINK_LLVM_DYLIB=ON \
     -DCLANG_LINK_CLANG_DYLIB=OFF \
     -DLLVM_ENABLE_PROJECTS='clang' \
-    -DLLVM_DISTRIBUTION_COMPONENTS='LLVM;LTO;clang;llvm-headers;clang-resource-headers;llvm-tblgen;clang-tblgen;dsymutil;llvm-config;llvm-objcopy' \
+    -DLLVM_DISTRIBUTION_COMPONENTS="$(llvm_components)" \
     -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' \
     -DLLVM_DEFAULT_TARGET_TRIPLE="$host"
 ninja -j"$JOBS" install-distribution
