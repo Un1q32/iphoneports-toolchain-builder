@@ -17,7 +17,7 @@ target = [
   "armv6-apple-ios",
   "armv7-apple-ios",
   "armv7s-apple-ios",
-  # "aarch64-apple-ios",
+  "aarch64-apple-ios",
   # "arm64e-apple-ios",
 ]
 locked-deps = true
