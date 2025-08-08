@@ -12,7 +12,7 @@ index 8882ba359b7..2d7ed3ef054 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index aa6d1ec7009..0e258923669 100644
+index aa6d1ec7009..a5b921f0186 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
 @@ -16,6 +16,8 @@
@@ -122,7 +122,7 @@ index aa6d1ec7009..0e258923669 100644
              "visionos" => (1, 0, 0),
              _ => unreachable!("tried to get deployment target for non-Apple platform"),
          };
-@@ -311,9 +310,13 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -311,9 +310,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
      pub fn minimum_deployment_target(target: &Target) -> Self {
          let (major, minor, patch) = match (&*target.os, &*target.arch, &*target.abi) {
              ("macos", "aarch64", _) => (11, 0, 0),
@@ -130,6 +130,7 @@ index aa6d1ec7009..0e258923669 100644
              ("ios", "aarch64", "macabi") => (14, 0, 0),
              ("ios", "aarch64", "sim") => (14, 0, 0),
              ("ios", _, _) if target.llvm_target.starts_with("arm64e") => (14, 0, 0),
++            ("ios", _, _) if target.llvm_target.starts_with("arm64") => (7, 0, 0),
 +            ("ios", _, _) if target.llvm_target.starts_with("armv7s") => (6, 0, 0),
 +            ("ios", _, _) if target.llvm_target.starts_with("armv7") => (3, 0, 0),
 +            ("macos", _, _) if target.llvm_target.starts_with("x86_64h") => (10, 8, 0),
