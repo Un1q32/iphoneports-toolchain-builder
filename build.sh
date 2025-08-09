@@ -262,7 +262,24 @@ cd share/iphoneports
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
 done
-rm -rf include bin/llvm-config bin/llvm-objcopy bin/FileCheck bin/rust-*
+rm -rf \
+    include \
+    bin/llc \
+    bin/opt \
+    bin/llvm-link \
+    bin/llvm-config \
+    bin/llvm-objcopy \
+    bin/llvm-size \
+    bin/llvm-strip \
+    bin/llvm-ar \
+    bin/llvm-as \
+    bin/llvm-readobj \
+    bin/llvm-profdata \
+    bin/llvm-objdump \
+    bin/llvm-dis \
+    bin/llvm-cov \
+    bin/FileCheck \
+    bin/rust-*
 for bin in bin/* lib/*; do
     if [ ! -h "$bin" ] && [ -f "$bin" ]; then
         "$STRIP" "$bin"
