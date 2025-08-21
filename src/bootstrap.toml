@@ -12,7 +12,7 @@ target = [
   "@HOST@",
   "x86_64-apple-darwin",
   "i686-apple-darwin",
-  # "aarch64-apple-darwin",
+  "aarch64-apple-darwin",
   # "arm64e-apple-darwin",
   "armv6-apple-ios",
   "armv7-apple-ios",

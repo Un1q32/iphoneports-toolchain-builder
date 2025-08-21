@@ -166,25 +166,25 @@ for src in $armv6srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
 done
 for src in $armv7srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
 done
 for src in $armv7ssrcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/iossysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
 done
 for src in $arm64srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/iossysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
 "$clang" -target arm64e-apple-ios14 -xc /dev/null -c -o nothing.o &
 wait
@@ -196,13 +196,13 @@ for src in $x32srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/macsysroot" -target i386-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "i386-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target i386-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "i386-${src%\.c}.o" &
 done
 for src in $x64srcs; do
     while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
         sleep 0.1
     done
-    "$clang" -isysroot "$scriptroot/src/macsysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
 "$clang" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -o nothing.o &
 wait
@@ -240,8 +240,12 @@ sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
     -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" \
     -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
 patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
-export PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH"
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" CC=clang BOOTSTRAP_SKIP_TARGET_SANITY=1 ./x install -j "$JOBS"
+PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
+    SDKROOT="$scriptroot/src/sysroot" \
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" \
+    CC=clang \
+    BOOTSTRAP_SKIP_TARGET_SANITY=1 \
+    ./x install -j "$JOBS"
 ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
 )
 )

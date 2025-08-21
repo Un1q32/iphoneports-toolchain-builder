@@ -1,8 +1,19 @@
 #!/bin/sh
 # just good enough to fool the rust build system
 path="${0%/*}/.."
-if [ "$3" = "iphoneos" ]; then
-    realpath "$path/iossysroot"
-else
-    realpath "$path/macsysroot"
-fi
+case $* in
+    (*--show-sdk-version*)
+        case $* in
+            (*iphoneos*) echo 14.0 ;;
+            (*)          echo 11.0 ;;
+        esac
+    ;;
+
+    (*--show-sdk-path*)
+        realpath "$path/sysroot"
+    ;;
+
+    (*)
+        exit 1
+    ;;
+esac
