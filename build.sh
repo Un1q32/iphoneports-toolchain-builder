@@ -240,7 +240,7 @@ sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
     -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" \
     -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
 patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
-PATH="$scriptroot/src/rustbin:$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
+PATH="$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
     SDKROOT="$scriptroot/src/sysroot" \
     LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" \
     CC=clang \
