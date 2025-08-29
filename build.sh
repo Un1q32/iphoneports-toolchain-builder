@@ -163,27 +163,15 @@ armv6srcs="$armv7srcs floatundidf.c floatundisf.c"
 clang="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang"
 
 for src in $armv6srcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
 done
 for src in $armv7srcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
 done
 for src in $armv7ssrcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7s-apple-ios6 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7s-${src%\.c}.o" &
 done
 for src in $arm64srcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
 "$clang" -target arm64e-apple-ios14 -xc /dev/null -c -o nothing.o &
@@ -193,15 +181,9 @@ wait
 rm ./*.o
 
 for src in $x32srcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target i386-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "i386-${src%\.c}.o" &
 done
 for src in $x64srcs; do
-    while [ "$(pgrep clang | wc -l)" -ge "$JOBS" ]; do
-        sleep 0.1
-    done
     "$clang" -isysroot "$scriptroot/src/sysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
 "$clang" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -o nothing.o &
