@@ -12,7 +12,7 @@ index 8882ba359b7..2d7ed3ef054 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index aa6d1ec7009..a5b921f0186 100644
+index aa6d1ec7009..75209687079 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
 @@ -16,6 +16,8 @@
@@ -80,7 +80,7 @@ index aa6d1ec7009..a5b921f0186 100644
              Arm64 | Arm64e | Arm64_32 | I386 | I686 | X86_64 | X86_64h => StackProbeType::Inline,
          }
      }
-@@ -120,13 +123,10 @@ pub(crate) fn base(
+@@ -120,22 +123,17 @@ pub(crate) fn base(
          families: cvs!["unix"],
          is_like_darwin: true,
          binary_format: BinaryFormat::MachO,
@@ -93,11 +93,11 @@ index aa6d1ec7009..a5b921f0186 100644
 -            // clang ignores `-fomit-frame-pointer` for Armv7, it only accepts `-momit-leaf-frame-pointer`
 -            Armv7k | Armv7s => FramePointer::Always,
 +            // clang ignores `-fomit-frame-pointer` for aarch32, it only accepts `-momit-leaf-frame-pointer`
-+            Armv6 | Armv7 | Armv7k | Armv7s => FramePointer::NonLeaf,
++            Armv6 | Armv7 | Armv7k | Armv7s | Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
              // clang supports omitting frame pointers for the rest, but... don't?
-             Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
+-            Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
              I386 | I686 | X86_64 | X86_64h => FramePointer::Always,
-@@ -134,8 +134,7 @@ pub(crate) fn base(
+         },
          has_rpath: true,
          dll_suffix: ".dylib".into(),
          archive_format: "darwin".into(),
@@ -107,7 +107,7 @@ index aa6d1ec7009..a5b921f0186 100644
          has_thread_local: true,
          abi_return_struct_as_int: true,
          emit_debug_gdb_scripts: false,
-@@ -291,10 +290,10 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -291,10 +289,10 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
          // $ rustc --print deployment-target
          // ```
          let (major, minor, patch) = match os {
@@ -122,7 +122,7 @@ index aa6d1ec7009..a5b921f0186 100644
              "visionos" => (1, 0, 0),
              _ => unreachable!("tried to get deployment target for non-Apple platform"),
          };
-@@ -311,9 +310,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -311,9 +309,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
      pub fn minimum_deployment_target(target: &Target) -> Self {
          let (major, minor, patch) = match (&*target.os, &*target.arch, &*target.abi) {
              ("macos", "aarch64", _) => (11, 0, 0),
