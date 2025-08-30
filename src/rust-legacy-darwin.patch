@@ -93,7 +93,7 @@ index aa6d1ec7009..a5b921f0186 100644
 -            // clang ignores `-fomit-frame-pointer` for Armv7, it only accepts `-momit-leaf-frame-pointer`
 -            Armv7k | Armv7s => FramePointer::Always,
 +            // clang ignores `-fomit-frame-pointer` for aarch32, it only accepts `-momit-leaf-frame-pointer`
-+            Armv6 | Armv7 | Armv7k | Armv7s => FramePointer::Always,
++            Armv6 | Armv7 | Armv7k | Armv7s => FramePointer::NonLeaf,
              // clang supports omitting frame pointers for the rest, but... don't?
              Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
              I386 | I686 | X86_64 | X86_64h => FramePointer::Always,
