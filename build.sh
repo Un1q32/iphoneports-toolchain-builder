@@ -153,13 +153,13 @@ mkdir "llvm-project-llvmorg-$llvmver/crtbuild"
 (
 cd "llvm-project-llvmorg-$llvmver/crtbuild"
 
-x64srcs="emutls.c eprintf.c int_util.c"
+x64srcs="emutls.c eprintf.c int_util.c extendhfsf2.c truncsfhf2.c truncdfhf2.c truncxfhf2.c"
 x32srcs="$x64srcs atomic.c"
 
 arm64srcs="emutls.c"
-armv7ssrcs="$arm64srcs atomic.c extendhfsf2.c truncsfhf2.c"
+armv7ssrcs="$arm64srcs atomic.c extendhfsf2.c truncsfhf2.c truncdfhf2.c"
 armv7srcs="$armv7ssrcs"
-armv6srcs="$armv7srcs floatundidf.c floatundisf.c"
+armv6srcs="$armv7srcs floatundisf.c floatundidf.c"
 clang="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang"
 
 for src in $armv6srcs; do
