@@ -1,9 +1,9 @@
 diff --git a/compiler/rustc_codegen_ssa/src/back/link.rs b/compiler/rustc_codegen_ssa/src/back/link.rs
-index 8882ba359b7..2d7ed3ef054 100644
+index 162fbf3d6e2..d7d7217aff8 100644
 --- a/compiler/rustc_codegen_ssa/src/back/link.rs
 +++ b/compiler/rustc_codegen_ssa/src/back/link.rs
-@@ -3054,6 +3054,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
-     // Intentially verbose to ensure that the list always matches correctly
+@@ -3049,6 +3049,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
+     // Intentionally verbose to ensure that the list always matches correctly
      // with the list in the source above.
      let ld64_arch = match llvm_arch {
 +        "armv6" => "armv6",
@@ -12,7 +12,7 @@ index 8882ba359b7..2d7ed3ef054 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index aa6d1ec7009..75209687079 100644
+index aa6d1ec7009..5caae91224b 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
 @@ -16,6 +16,8 @@
@@ -46,7 +46,7 @@ index aa6d1ec7009..75209687079 100644
  
      fn target_cpu(self, abi: TargetAbi) -> &'static str {
          match self {
-+            Armv6 => "arm1176jzf-s",
++            Armv6 => "mpcore",
 +            Armv7 => "cortex-a8",
              Armv7k => "cortex-a8",
 -            Armv7s => "swift", // iOS 10 is only supported on iPhone 5 or higher.
@@ -138,10 +138,10 @@ index aa6d1ec7009..75209687079 100644
              ("ios", _, "macabi") => (13, 1, 0),
              ("tvos", "aarch64", "sim") => (14, 0, 0),
 diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
-index 7a49f004072..1c8becaab74 100644
+index 033590e01a6..fe5c526f6af 100644
 --- a/compiler/rustc_target/src/spec/mod.rs
 +++ b/compiler/rustc_target/src/spec/mod.rs
-@@ -1876,6 +1876,8 @@ fn $module() {
+@@ -2025,6 +2025,8 @@ fn $module() {
      ("aarch64-apple-ios", aarch64_apple_ios),
      ("arm64e-apple-ios", arm64e_apple_ios),
      ("armv7s-apple-ios", armv7s_apple_ios),
@@ -317,7 +317,7 @@ index d1339c57b00..0727bcaf85b 100644
      }
  }
 diff --git a/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs b/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
-index eba595ba7dd..8bcef9205d0 100644
+index 33ad659fc72..afe11c1bf8e 100644
 --- a/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
 +++ b/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
 @@ -1,12 +1,12 @@
@@ -332,7 +332,7 @@ index eba595ba7dd..8bcef9205d0 100644
          metadata: TargetMetadata {
 -            description: Some("x86_64 Apple macOS (10.12+, Sierra+)".into()),
 +            description: Some("x86_64 Apple macOS (10.6+, Snow Leopard+)".into()),
-             tier: Some(1),
+             tier: Some(2),
              host_tools: Some(true),
              std: Some(true),
 @@ -17,12 +17,14 @@ pub(crate) fn target() -> Target {
@@ -375,7 +375,7 @@ index e64556c4132..0d38c335e06 100644
      }
  }
 diff --git a/library/std/Cargo.toml b/library/std/Cargo.toml
-index ae7107938f3..416114e8584 100644
+index 7bc52976500..4e612bef45f 100644
 --- a/library/std/Cargo.toml
 +++ b/library/std/Cargo.toml
 @@ -10,7 +10,7 @@ edition = "2024"
@@ -388,7 +388,7 @@ index ae7107938f3..416114e8584 100644
  [dependencies]
  alloc = { path = "../alloc", public = true }
 diff --git a/library/std/src/sys/process/unix/unix.rs b/library/std/src/sys/process/unix/unix.rs
-index 1fe80c13b81..f04e14e1188 100644
+index 5d13d6da185..23646b742ce 100644
 --- a/library/std/src/sys/process/unix/unix.rs
 +++ b/library/std/src/sys/process/unix/unix.rs
 @@ -5,8 +5,6 @@
@@ -436,7 +436,7 @@ index 1fe80c13b81..f04e14e1188 100644
      unsafe fn do_exec(
          &mut self,
          stdio: ChildPipes,
-@@ -403,15 +383,6 @@ fn drop(&mut self) {
+@@ -407,15 +387,6 @@ fn drop(&mut self) {
          Err(io::Error::last_os_error())
      }
  
@@ -453,7 +453,7 @@ index 1fe80c13b81..f04e14e1188 100644
          target_os = "freebsd",
          target_os = "illumos",
 diff --git a/library/std/src/sys/random/mod.rs b/library/std/src/sys/random/mod.rs
-index 013e886a99b..138f24bd8ae 100644
+index fc85797dcc2..dc2a4c8249c 100644
 --- a/library/std/src/sys/random/mod.rs
 +++ b/library/std/src/sys/random/mod.rs
 @@ -6,9 +6,6 @@
@@ -466,7 +466,7 @@ index 013e886a99b..138f24bd8ae 100644
      // Others, in alphabetical ordering.
      } else if #[cfg(any(
          target_os = "dragonfly",
-@@ -40,6 +37,7 @@
+@@ -41,6 +38,7 @@
          mod getrandom;
          pub use getrandom::fill_bytes;
      } else if #[cfg(any(
@@ -626,7 +626,7 @@ index f4d8fa0a58c..da8bcf5ec67 100644
          mod xous;
          pub use xous::Parker;
 diff --git a/src/tools/build-manifest/src/main.rs b/src/tools/build-manifest/src/main.rs
-index 4c53ea42793..ff2f5499d02 100644
+index e10c9977fd4..ca2efaa44f6 100644
 --- a/src/tools/build-manifest/src/main.rs
 +++ b/src/tools/build-manifest/src/main.rs
 @@ -96,6 +96,8 @@
