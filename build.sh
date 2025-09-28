@@ -77,6 +77,20 @@ llvm_components() {
     clang-tblgen \
     dsymutil \
     llvm-config \
+    llvm-objcopy \
+    llvm-objdump \
+    llvm-cov \
+    llvm-nm \
+    llvm-profdata \
+    llvm-readobj \
+    llvm-size \
+    llvm-strip \
+    llvm-ar \
+    llvm-as \
+    llvm-dis \
+    llvm-link \
+    llc \
+    opt \
     ; do
         printf '%s;' "$component"
     done
@@ -96,6 +110,8 @@ cmake -GNinja ../llvm \
     -DLLVM_TARGETS_TO_BUILD='X86;ARM;AArch64' \
     -DLLVM_DEFAULT_TARGET_TRIPLE="$host"
 ninja -j"$JOBS" install-distribution
+ninja -j"$JOBS" FileCheck
+mv bin/FileCheck "$pwd/iphoneports-toolchain/share/iphoneports/bin"
 )
 
 printf "Building libtapi\n\n"
@@ -192,6 +208,28 @@ mkdir -p "$pwd/iphoneports-toolchain/bin" "$pwd/iphoneports-toolchain/share/man/
 cp ldid "$pwd/iphoneports-toolchain/bin"
 cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 )
+
+case $host in
+    (x86_64-*-linux-gnu) host=x86_64-unknown-linux-gnu ;;
+    (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
+esac
+printf "Building rust\n\n"
+rustver="1.89.0"
+curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ
+(
+cd rustc-*/
+sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
+    -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" \
+    -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
+patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
+PATH="$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
+    SDKROOT="$scriptroot/src/sysroot" \
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$pwd/iphoneports-toolchain/share/iphoneports/lib" \
+    CC=clang \
+    BOOTSTRAP_SKIP_TARGET_SANITY=1 \
+    ./x install -j "$JOBS"
+ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
+)
 )
 
 (
@@ -210,7 +248,24 @@ cd share/iphoneports
 for bin in cctools-bin/*; do
     [ "$bin" != "cctools-bin/cc" ] && [ "$bin" != "cctools-bin/sdkpath" ] && "$STRIP" "$bin"
 done
-rm -rf include
+rm -rf \
+    include \
+    bin/llc \
+    bin/opt \
+    bin/llvm-link \
+    bin/llvm-config \
+    bin/llvm-objcopy \
+    bin/llvm-size \
+    bin/llvm-strip \
+    bin/llvm-ar \
+    bin/llvm-as \
+    bin/llvm-readobj \
+    bin/llvm-profdata \
+    bin/llvm-objdump \
+    bin/llvm-dis \
+    bin/llvm-cov \
+    bin/FileCheck \
+    bin/rust-*
 for bin in bin/* lib/*; do
     if [ ! -h "$bin" ] && [ -f "$bin" ]; then
         "$STRIP" "$bin"
