@@ -215,7 +215,17 @@ case $host in
 esac
 printf "Building rust\n\n"
 rustver="1.90.0"
-curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ
+curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
+tries=2
+[ -z "$success" ] && printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
+while [ -z "$success" ] && [ "$tries" -gt 0 ]; do
+    if curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ; then
+        success=1
+    else
+        printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
+        tries=$((tries - 1))
+    fi
+done
 (
 cd rustc-*/
 sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
