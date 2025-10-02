@@ -216,7 +216,7 @@ esac
 printf "Building rust\n\n"
 rustver="1.90.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
-tries=2
+tries=4
 [ -z "$success" ] && printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
 while [ -z "$success" ] && [ "$tries" -gt 0 ]; do
     if curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ; then
@@ -226,6 +226,10 @@ while [ -z "$success" ] && [ "$tries" -gt 0 ]; do
         tries=$((tries - 1))
     fi
 done
+if [ -z "$success" ]; then
+    printf 'Failed to download rust sources after 5 tries\n'
+    exit 1
+fi
 (
 cd rustc-*/
 sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
