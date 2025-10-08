@@ -554,7 +554,7 @@
 #  else /* default */
 #    if __DARWIN_ONLY_64_BIT_INO_T
 #      define __DARWIN_64_BIT_INO_T 1
-#    elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && ((__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ - 0) < 1060) || __DARWIN_UNIX03 == 0
+#    elif __DARWIN_UNIX03 == 0
 #      define __DARWIN_64_BIT_INO_T 0
 #    else /* default */
 #      define __DARWIN_64_BIT_INO_T 1
