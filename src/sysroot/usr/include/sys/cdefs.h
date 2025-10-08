@@ -536,7 +536,11 @@
 #  elif defined(_NONSTD_SOURCE)
 #    define __DARWIN_UNIX03     0
 #  else /* default */
-#    define __DARWIN_UNIX03   1
+#    if defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && ((__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ - 0) < 1040)
+#      define __DARWIN_UNIX03   0
+#    else /* __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 */
+#      define __DARWIN_UNIX03   1
+#    endif /* __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 */
 #  endif /* _DARWIN_C_SOURCE || _XOPEN_SOURCE || _POSIX_C_SOURCE || __LP64__ */
 #endif /* !__DARWIN_UNIX03 */
 
