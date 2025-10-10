@@ -163,7 +163,7 @@ armv6srcs="$armv7srcs floatundisf.c floatundidf.c"
 clang="$pwd/iphoneports-toolchain/share/iphoneports/bin/clang"
 
 for src in $armv6srcs; do
-    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios2 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target armv6-apple-ios1 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv6-${src%\.c}.o" &
 done
 for src in $armv7srcs; do
     "$clang" -isysroot "$scriptroot/src/sysroot" -target armv7-apple-ios3 "../compiler-rt/lib/builtins/$src" -c -O3 -o "armv7-${src%\.c}.o" &
