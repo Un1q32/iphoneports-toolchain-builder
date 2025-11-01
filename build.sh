@@ -214,7 +214,7 @@ case $host in
     (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
 esac
 printf "Building rust\n\n"
-rustver="1.90.0"
+rustver="1.91.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
 tries=4
 [ -z "$success" ] && printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
