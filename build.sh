@@ -53,7 +53,7 @@ host="$(cc -dumpmachine)"
 mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
-llvmver="21.1.5"
+llvmver="21.1.6"
 curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvmver.tar.gz" | tar -xz
 mkdir "llvm-project-llvmorg-$llvmver/build"
 (
@@ -214,7 +214,7 @@ case $host in
     (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
 esac
 printf "Building rust\n\n"
-rustver="1.91.0"
+rustver="1.91.1"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
 tries=4
 [ -z "$success" ] && printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
