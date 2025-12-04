@@ -29,7 +29,7 @@ exec $ccache "$cc" \
     -isystem "$_SDK/var/usr/include" \
     "$includeflags" \
     "$libflags" \
-    -mlinker-version=955.13 \
+    -mlinker-version=956.6 \
     "$@" \
     -target "$target" \
     -Wno-unused-command-line-argument \
