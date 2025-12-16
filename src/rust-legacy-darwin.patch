@@ -1,8 +1,8 @@
 diff --git a/compiler/rustc_codegen_ssa/src/back/link.rs b/compiler/rustc_codegen_ssa/src/back/link.rs
-index 48b01ea2df1..773f2db1a16 100644
+index ea538d3d469..b2a5dc76d88 100644
 --- a/compiler/rustc_codegen_ssa/src/back/link.rs
 +++ b/compiler/rustc_codegen_ssa/src/back/link.rs
-@@ -3075,6 +3075,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
+@@ -3081,6 +3081,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
      // Intentionally verbose to ensure that the list always matches correctly
      // with the list in the source above.
      let ld64_arch = match llvm_arch {
@@ -12,7 +12,7 @@ index 48b01ea2df1..773f2db1a16 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index ecc74264160..c079227c48b 100644
+index c32e333eb8b..340351a043c 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
 @@ -15,6 +15,8 @@
@@ -107,7 +107,7 @@ index ecc74264160..c079227c48b 100644
          has_thread_local: true,
          abi_return_struct_as_int: true,
          emit_debug_gdb_scripts: false,
-@@ -278,10 +276,10 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -288,10 +286,10 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
          // $ rustc --print deployment-target
          // ```
          let (major, minor, patch) = match os {
@@ -122,7 +122,7 @@ index ecc74264160..c079227c48b 100644
              "visionos" => (1, 0, 0),
              _ => unreachable!("tried to get deployment target for non-Apple platform"),
          };
-@@ -298,9 +296,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -308,9 +306,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
      pub fn minimum_deployment_target(target: &Target) -> Self {
          let (major, minor, patch) = match (&*target.os, &*target.arch, &*target.env) {
              ("macos", "aarch64", _) => (11, 0, 0),
@@ -138,10 +138,10 @@ index ecc74264160..c079227c48b 100644
              ("ios", _, "macabi") => (13, 1, 0),
              ("tvos", "aarch64", "sim") => (14, 0, 0),
 diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
-index 07fb1ce63f7..3db34632d25 100644
+index 1638c87c9ca..8f830afea43 100644
 --- a/compiler/rustc_target/src/spec/mod.rs
 +++ b/compiler/rustc_target/src/spec/mod.rs
-@@ -1574,6 +1574,8 @@ fn $module() {
+@@ -1564,6 +1564,8 @@ fn $module() {
      ("aarch64-apple-ios", aarch64_apple_ios),
      ("arm64e-apple-ios", arm64e_apple_ios),
      ("armv7s-apple-ios", armv7s_apple_ios),
@@ -344,7 +344,7 @@ index 67b5a160a89..131dd246677 100644
      }
  }
 diff --git a/library/std/Cargo.toml b/library/std/Cargo.toml
-index d28a7f0b460..befa58c087d 100644
+index 685c2cf162a..6902001b23b 100644
 --- a/library/std/Cargo.toml
 +++ b/library/std/Cargo.toml
 @@ -10,7 +10,7 @@ edition = "2024"
@@ -356,8 +356,51 @@ index d28a7f0b460..befa58c087d 100644
  
  [dependencies]
  alloc = { path = "../alloc", public = true }
+diff --git a/library/std/src/sys/pal/unix/sync/condvar.rs b/library/std/src/sys/pal/unix/sync/condvar.rs
+index b6c3ba4136f..73768860723 100644
+--- a/library/std/src/sys/pal/unix/sync/condvar.rs
++++ b/library/std/src/sys/pal/unix/sync/condvar.rs
+@@ -1,6 +1,10 @@
+ use super::Mutex;
+ use crate::cell::UnsafeCell;
+ use crate::pin::Pin;
++#[cfg(not(target_os = "nto"))]
++use crate::sys::pal::time::TIMESPEC_MAX;
++#[cfg(target_os = "nto")]
++use crate::sys::pal::time::TIMESPEC_MAX_CAPPED;
+ use crate::time::Duration;
+ 
+ pub struct Condvar {
+@@ -51,10 +55,6 @@ impl Condvar {
+     /// * `mutex` must be locked by the current thread.
+     /// * This condition variable may only be used with the same mutex.
+     pub unsafe fn wait_timeout(&self, mutex: Pin<&Mutex>, dur: Duration) -> bool {
+-        #[cfg(not(target_os = "nto"))]
+-        use crate::sys::pal::time::TIMESPEC_MAX;
+-        #[cfg(target_os = "nto")]
+-        use crate::sys::pal::time::TIMESPEC_MAX_CAPPED;
+         use crate::sys::pal::time::Timespec;
+ 
+         let mutex = mutex.raw();
+@@ -118,10 +118,12 @@ pub unsafe fn wait_timeout(&self, mutex: Pin<&Mutex>, dur: Duration) -> bool {
+ 
+         let (dur, clamped) = if dur <= MAX_DURATION { (dur, false) } else { (MAX_DURATION, true) };
+ 
+-        let timeout = libc::timespec {
+-            // This cannot overflow because of the clamping above.
+-            tv_sec: dur.as_secs() as i64,
+-            tv_nsec: dur.subsec_nanos() as i64,
++        // This can overflow on 32-bit platforms, but not on 64-bit because of the clamping above.
++        let timeout = if let Ok(tv_sec) = dur.as_secs().try_into() {
++            libc::timespec { tv_sec, tv_nsec: dur.subsec_nanos() as _ }
++        } else {
++            // This is less than `MAX_DURATION` on 32-bit platforms.
++            TIMESPEC_MAX
+         };
+ 
+         let r = unsafe { libc::pthread_cond_timedwait_relative_np(self.raw(), mutex, &timeout) };
 diff --git a/library/std/src/sys/process/unix/unix.rs b/library/std/src/sys/process/unix/unix.rs
-index 11d48878727..5bb99c21b8b 100644
+index 7d944f2f7ee..cb6adb756b8 100644
 --- a/library/std/src/sys/process/unix/unix.rs
 +++ b/library/std/src/sys/process/unix/unix.rs
 @@ -5,8 +5,6 @@
@@ -369,7 +412,7 @@ index 11d48878727..5bb99c21b8b 100644
  )))]
  use libc::{gid_t, uid_t};
  
-@@ -163,26 +161,9 @@ pub fn spawn(
+@@ -164,26 +162,9 @@ pub fn spawn(
          }
      }
  
@@ -397,7 +440,7 @@ index 11d48878727..5bb99c21b8b 100644
      unsafe fn do_fork(&mut self) -> Result<pid_t, io::Error> {
          cvt(libc::fork())
      }
-@@ -273,7 +254,6 @@ pub fn exec(&mut self, default: Stdio) -> io::Error {
+@@ -274,7 +255,6 @@ pub fn exec(&mut self, default: Stdio) -> io::Error {
      // allocation). Instead we just close it manually. This will never
      // have the drop glue anyway because this code never returns (the
      // child will either exec() or invoke libc::exit)
@@ -405,7 +448,7 @@ index 11d48878727..5bb99c21b8b 100644
      unsafe fn do_exec(
          &mut self,
          stdio: ChildPipes,
-@@ -408,15 +388,6 @@ fn drop(&mut self) {
+@@ -409,15 +389,6 @@ fn drop(&mut self) {
          Err(io::Error::last_os_error())
      }
  
@@ -422,10 +465,10 @@ index 11d48878727..5bb99c21b8b 100644
          target_os = "freebsd",
          target_os = "illumos",
 diff --git a/library/std/src/sys/sync/thread_parking/mod.rs b/library/std/src/sys/sync/thread_parking/mod.rs
-index b9fb27b4eef..c90f050a59e 100644
+index e8a9dc884f8..683e9601c9c 100644
 --- a/library/std/src/sys/sync/thread_parking/mod.rs
 +++ b/library/std/src/sys/sync/thread_parking/mod.rs
-@@ -25,11 +25,6 @@
+@@ -26,11 +26,6 @@
          mod windows7;
          pub use windows7::Parker;
      }
@@ -438,10 +481,10 @@ index b9fb27b4eef..c90f050a59e 100644
          mod xous;
          pub use xous::Parker;
 diff --git a/src/tools/build-manifest/src/main.rs b/src/tools/build-manifest/src/main.rs
-index 2890d26d3f4..d3a312b7232 100644
+index 9bae8b241a9..f60af2bbcee 100644
 --- a/src/tools/build-manifest/src/main.rs
 +++ b/src/tools/build-manifest/src/main.rs
-@@ -99,6 +99,8 @@
+@@ -100,6 +100,8 @@
      "armv7r-none-eabihf",
      "armv8r-none-eabihf",
      "armv7s-apple-ios",
