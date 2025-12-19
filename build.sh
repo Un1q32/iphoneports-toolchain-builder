@@ -152,6 +152,7 @@ printf "Building compiler-rt\n\n"
 mkdir "llvm-project-llvmorg-$llvmver/crtbuild"
 (
 cd "llvm-project-llvmorg-$llvmver/crtbuild"
+curl -L -s -o ../compiler-rt/ubsan.c https://raw.githubusercontent.com/Un1q32/ubsan/5281153ae0e16862a5dba4c0defd4984665a4f34/ubsan.c
 
 x64srcs="emutls.c eprintf.c int_util.c extendhfsf2.c truncsfhf2.c truncdfhf2.c truncxfhf2.c"
 x32srcs="$x64srcs atomic.c"
@@ -211,12 +212,35 @@ rm ./*.o
     -arch arm64 -Xarch_arm64 -mmacos-version-min=11.0 \
     -arch arm64e -Xarch_arm64e -mmacos-version-min=11.0 \
     ../compiler-rt/lib/ubsan_minimal/ubsan_minimal_handlers.cpp \
-    -O3 -c -I../compiler-rt/lib
+    -O3 -c -I../compiler-rt/lib &
+
+"$clang" -isysroot "$scriptroot/src/sysroot" \
+    -o ubsan_ios.o \
+    -target unknown-apple-ios \
+    -arch armv6 -Xarch_armv6 -mios-version-min=1.0 \
+    -arch armv7 -Xarch_armv7 -mios-version-min=3.0 \
+    -arch armv7s -Xarch_armv7s -mios-version-min=6.0 \
+    -arch arm64 -Xarch_arm64 -mios-version-min=7.0 \
+    -arch arm64e -Xarch_arm64e -mios-version-min=14.0 \
+    ../compiler-rt/ubsan.c \
+    -O3 -c &
+
+"$clang" -isysroot "$scriptroot/src/sysroot" \
+    -o ubsan_osx.o \
+    -target unknown-apple-macos \
+    -arch i386 -Xarch_i386 -mmacos-version-min=10.4 \
+    -arch x86_64 -Xarch_x86_64 -mmacos-version-min=10.4 \
+    -arch arm64 -Xarch_arm64 -mmacos-version-min=11.0 \
+    -arch arm64e -Xarch_arm64e -mmacos-version-min=11.0 \
+    ../compiler-rt/ubsan.c \
+    -O3 -c
 
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ubsan_minimal_ios.a ubsan_minimal_ios.o
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ubsan_minimal_osx.a ubsan_minimal_osx.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ubsan_ios.a ubsan_ios.o
+"$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ubsan_osx.a ubsan_osx.o
 rm ./*.o
 
 llvmshortver="$(cd "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang" && echo *)"
