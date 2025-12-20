@@ -152,7 +152,7 @@ printf "Building compiler-rt\n\n"
 mkdir "llvm-project-llvmorg-$llvmver/crtbuild"
 (
 cd "llvm-project-llvmorg-$llvmver/crtbuild"
-curl -L -s -o ../compiler-rt/ubsan.c https://raw.githubusercontent.com/Un1q32/ubsan/1810a6888fe543084c3924590267b1e2f949e315/ubsan.c
+curl -L -s -o ../compiler-rt/ubsan.c https://raw.githubusercontent.com/Un1q32/ubsan/e1fe5250c54406f32860c9e91a059198d7b25c43/ubsan.c
 
 x64srcs="emutls.c eprintf.c int_util.c extendhfsf2.c truncsfhf2.c truncdfhf2.c truncxfhf2.c"
 x32srcs="$x64srcs atomic.c"
