@@ -261,8 +261,10 @@ cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 )
 
 case $host in
-    (x86_64-*-linux-gnu) host=x86_64-unknown-linux-gnu ;;
     (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
+    (x86_64-*-linux-gnu) host=x86_64-unknown-linux-gnu ;;
+    (aarch64-*-linux-musl) host=aarch64-unknown-linux-musl ;;
+    (aarch64-*-linux-gnu|aarch64-*-linux) host=aarch64-unknown-linux-gnu ;;
 esac
 printf "Building rust\n\n"
 rustver="1.92.0"
