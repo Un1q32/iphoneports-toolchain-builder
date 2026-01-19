@@ -260,12 +260,6 @@ cp ldid "$pwd/iphoneports-toolchain/bin"
 cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 )
 
-case $host in
-    (x86_64-*-linux-musl) host=x86_64-unknown-linux-musl ;;
-    (x86_64-*-linux-gnu) host=x86_64-unknown-linux-gnu ;;
-    (aarch64-*-linux-musl) host=aarch64-unknown-linux-musl ;;
-    (aarch64-*-linux-gnu|aarch64-*-linux) host=aarch64-unknown-linux-gnu ;;
-esac
 printf "Building rust\n\n"
 rustver="1.92.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
@@ -284,10 +278,20 @@ if [ -z "$success" ]; then
     exit 1
 fi
 (
+case $host in
+    (x86_64-*-linux-musl) rusthost=x86_64-unknown-linux-musl ;;
+    (x86_64-*-linux-gnu) rusthost=x86_64-unknown-linux-gnu ;;
+    (aarch64-*-linux-musl) rusthost=aarch64-unknown-linux-musl ;;
+    (aarch64-*-linux-gnu|aarch64-*-linux) rusthost=aarch64-unknown-linux-gnu ;;
+    (*)
+        printf 'Host %s not supported for rust\n' "$host"
+        exit 1
+    ;;
+esac
 cd rustc-*/
 sed -e "s|@PREFIX@|$pwd/iphoneports-toolchain/share/iphoneports|g" \
     -e "s|@LLVMCONFIG@|$pwd/iphoneports-toolchain/share/iphoneports/bin/llvm-config|g" \
-    -e "s|@HOST@|$host|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
+    -e "s|@HOST@|$rusthost|g" "$scriptroot/src/bootstrap.toml" > bootstrap.toml
 patch -p1 < "$scriptroot/src/rust-legacy-darwin.patch"
 PATH="$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
     SDKROOT="$scriptroot/src/sysroot" \
@@ -295,8 +299,10 @@ PATH="$pwd/iphoneports-toolchain/share/iphoneports/bin:$PATH" \
     CC=clang \
     BOOTSTRAP_SKIP_TARGET_SANITY=1 \
     ./x install -j "$JOBS"
-ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$host/lib"
-)
+ln -s "../../../$(readlink "$pwd/iphoneports-toolchain/share/iphoneports/lib/libLLVM.so")" "$pwd/iphoneports-toolchain/share/iphoneports/lib/rustlib/$rusthost/lib"
+) || {
+    printf 'Warning! this toolchain was built without rust support\n'
+}
 )
 
 (
