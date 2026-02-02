@@ -1,8 +1,8 @@
 diff --git a/compiler/rustc_codegen_ssa/src/back/link.rs b/compiler/rustc_codegen_ssa/src/back/link.rs
-index ea538d3d469..b2a5dc76d88 100644
+index d35c3b6bb18..7c665344a15 100644
 --- a/compiler/rustc_codegen_ssa/src/back/link.rs
 +++ b/compiler/rustc_codegen_ssa/src/back/link.rs
-@@ -3081,6 +3081,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
+@@ -3075,6 +3075,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
      // Intentionally verbose to ensure that the list always matches correctly
      // with the list in the source above.
      let ld64_arch = match llvm_arch {
@@ -12,10 +12,10 @@ index ea538d3d469..b2a5dc76d88 100644
          "armv7s" => "armv7s",
          "arm64" => "arm64",
 diff --git a/compiler/rustc_target/src/spec/base/apple/mod.rs b/compiler/rustc_target/src/spec/base/apple/mod.rs
-index c32e333eb8b..340351a043c 100644
+index 542c5e27849..e0ed52f402f 100644
 --- a/compiler/rustc_target/src/spec/base/apple/mod.rs
 +++ b/compiler/rustc_target/src/spec/base/apple/mod.rs
-@@ -15,6 +15,8 @@
+@@ -14,6 +14,8 @@
  #[allow(non_camel_case_types)]
  #[derive(Copy, Clone, PartialEq)]
  pub(crate) enum Arch {
@@ -24,63 +24,63 @@ index c32e333eb8b..340351a043c 100644
      Armv7k,
      Armv7s,
      Arm64,
-@@ -29,6 +31,8 @@ pub(crate) enum Arch {
+@@ -28,6 +30,8 @@ pub(crate) enum Arch {
  impl Arch {
      fn target_name(self) -> &'static str {
          match self {
-+            Armv6 => "armv6",
-+            Armv7 => "armv7",
-             Armv7k => "armv7k",
-             Armv7s => "armv7s",
-             Arm64 => "arm64",
-@@ -43,7 +47,7 @@ fn target_name(self) -> &'static str {
++            Self::Armv6 => "armv6",
++            Self::Armv7 => "armv7",
+             Self::Armv7k => "armv7k",
+             Self::Armv7s => "armv7s",
+             Self::Arm64 => "arm64",
+@@ -42,7 +46,7 @@ fn target_name(self) -> &'static str {
  
-     pub(crate) fn target_arch(self) -> Cow<'static, str> {
-         Cow::Borrowed(match self {
--            Armv7k | Armv7s => "arm",
-+            Armv6 | Armv7 | Armv7k | Armv7s => "arm",
-             Arm64 | Arm64e | Arm64_32 => "aarch64",
-             I386 | I686 => "x86",
-             X86_64 | X86_64h => "x86_64",
-@@ -52,8 +56,10 @@ pub(crate) fn target_arch(self) -> Cow<'static, str> {
+     pub(crate) fn target_arch(self) -> crate::spec::Arch {
+         match self {
+-            Self::Armv7k | Self::Armv7s => crate::spec::Arch::Arm,
++            Self::Armv6 | Self::Armv7 | Self::Armv7k | Self::Armv7s => crate::spec::Arch::Arm,
+             Self::Arm64 | Self::Arm64e | Self::Arm64_32 => crate::spec::Arch::AArch64,
+             Self::I386 | Self::I686 => crate::spec::Arch::X86,
+             Self::X86_64 | Self::X86_64h => crate::spec::Arch::X86_64,
+@@ -51,8 +55,10 @@ pub(crate) fn target_arch(self) -> crate::spec::Arch {
  
      fn target_cpu(self, env: TargetEnv) -> &'static str {
          match self {
-+            Armv6 => "mpcore",
-+            Armv7 => "cortex-a8",
-             Armv7k => "cortex-a8",
--            Armv7s => "swift", // iOS 10 is only supported on iPhone 5 or higher.
-+            Armv7s => "swift",
-             Arm64 => match env {
++            Self::Armv6 => "mpcore",
++            Self::Armv7 => "cortex-a8",
+             Self::Armv7k => "cortex-a8",
+-            Self::Armv7s => "swift", // iOS 10 is only supported on iPhone 5 or higher.
++            Self::Armv7s => "swift",
+             Self::Arm64 => match env {
                  TargetEnv::Normal => "apple-a7",
                  TargetEnv::Simulator => "apple-a12",
-@@ -61,21 +67,18 @@ fn target_cpu(self, env: TargetEnv) -> &'static str {
+@@ -60,21 +66,18 @@ fn target_cpu(self, env: TargetEnv) -> &'static str {
              },
-             Arm64e => "apple-a12",
-             Arm64_32 => "apple-s4",
+             Self::Arm64e => "apple-a12",
+             Self::Arm64_32 => "apple-s4",
 -            // Only macOS 10.12+ is supported, which means
 -            // all x86_64/x86 CPUs must be running at least penryn
 -            // https://github.com/llvm/llvm-project/blob/01f924d0e37a5deae51df0d77e10a15b63aa0c0f/clang/lib/Driver/ToolChains/Arch/X86.cpp#L79-L82
--            I386 | I686 => "penryn",
--            X86_64 => "penryn",
-+            I386 | I686 => "pentium-m",
-+            X86_64 => "core2",
+-            Self::I386 | Self::I686 => "penryn",
+-            Self::X86_64 => "penryn",
++            Self::I386 | Self::I686 => "pentium-m",
++            Self::X86_64 => "core2",
              // Note: `core-avx2` is slightly more advanced than `x86_64h`, see
              // comments (and disabled features) in `x86_64h_apple_darwin` for
 -            // details. It is a higher baseline then `penryn` however.
 +            // details. It is a higher baseline then `core2` however.
-             X86_64h => "core-avx2",
+             Self::X86_64h => "core-avx2",
          }
      }
  
      fn stack_probes(self) -> StackProbeType {
          match self {
--            Armv7k | Armv7s => StackProbeType::None,
-+            Armv6 | Armv7 | Armv7k | Armv7s => StackProbeType::None,
-             Arm64 | Arm64e | Arm64_32 | I386 | I686 | X86_64 | X86_64h => StackProbeType::Inline,
-         }
-     }
-@@ -126,22 +129,17 @@ pub(crate) fn base(
+-            Self::Armv7k | Self::Armv7s => StackProbeType::None,
++            Self::Armv6 | Self::Armv7 | Self::Armv7k | Self::Armv7s => StackProbeType::None,
+             Self::Arm64
+             | Self::Arm64e
+             | Self::Arm64_32
+@@ -141,22 +144,15 @@ pub(crate) fn base(
          families: cvs!["unix"],
          is_like_darwin: true,
          binary_format: BinaryFormat::MachO,
@@ -91,12 +91,11 @@ index c32e333eb8b..340351a043c 100644
 +        default_dwarf_version: 2,
          frame_pointer: match arch {
 -            // clang ignores `-fomit-frame-pointer` for Armv7, it only accepts `-momit-leaf-frame-pointer`
--            Armv7k | Armv7s => FramePointer::Always,
-+            // clang ignores `-fomit-frame-pointer` for aarch32, it only accepts `-momit-leaf-frame-pointer`
-+            Armv6 | Armv7 | Armv7k | Armv7s | Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
-             // clang supports omitting frame pointers for the rest, but... don't?
--            Arm64 | Arm64e | Arm64_32 => FramePointer::NonLeaf,
-             I386 | I686 | X86_64 | X86_64h => FramePointer::Always,
+-            Arch::Armv7k | Arch::Armv7s => FramePointer::Always,
+-            // clang supports omitting frame pointers for the rest, but... don't?
+-            Arch::Arm64 | Arch::Arm64e | Arch::Arm64_32 => FramePointer::NonLeaf,
++            Arch::Armv6 | Arch::Armv7 | Arch::Armv7k | Arch::Armv7s | Arch::Arm64 | Arch::Arm64e | Arch::Arm64_32 => FramePointer::NonLeaf,
+             Arch::I386 | Arch::I686 | Arch::X86_64 | Arch::X86_64h => FramePointer::Always,
          },
          has_rpath: true,
          dll_suffix: ".dylib".into(),
@@ -107,41 +106,40 @@ index c32e333eb8b..340351a043c 100644
          has_thread_local: true,
          abi_return_struct_as_int: true,
          emit_debug_gdb_scripts: false,
-@@ -288,10 +286,10 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+@@ -303,10 +299,10 @@ pub fn os_minimum_deployment_target(os: &Os) -> Self {
          // $ rustc --print deployment-target
          // ```
          let (major, minor, patch) = match os {
--            "macos" => (10, 12, 0),
--            "ios" => (10, 0, 0),
--            "tvos" => (10, 0, 0),
--            "watchos" => (5, 0, 0),
-+            "macos" => (10, 5, 0),
-+            "ios" => (2, 0, 0),
-+            "tvos" => (8, 0, 0),
-+            "watchos" => (2, 0, 0),
-             "visionos" => (1, 0, 0),
-             _ => unreachable!("tried to get deployment target for non-Apple platform"),
-         };
-@@ -308,9 +306,14 @@ pub fn os_minimum_deployment_target(os: &str) -> Self {
+-            Os::MacOs => (10, 12, 0),
+-            Os::IOs => (10, 0, 0),
+-            Os::TvOs => (10, 0, 0),
+-            Os::WatchOs => (5, 0, 0),
++            Os::MacOs => (10, 5, 0),
++            Os::IOs => (2, 0, 0),
++            Os::TvOs => (8, 0, 0),
++            Os::WatchOs => (2, 0, 0),
+             Os::VisionOs => (1, 0, 0),
+             other => {
+                 unreachable!("tried to get deployment target for non-Apple platform: {:?}", other)
+@@ -325,9 +321,13 @@ pub fn os_minimum_deployment_target(os: &Os) -> Self {
      pub fn minimum_deployment_target(target: &Target) -> Self {
-         let (major, minor, patch) = match (&*target.os, &*target.arch, &*target.env) {
-             ("macos", "aarch64", _) => (11, 0, 0),
-+            ("macos", "x86_64", _) => (10, 6, 0),
-             ("ios", "aarch64", "macabi") => (14, 0, 0),
-             ("ios", "aarch64", "sim") => (14, 0, 0),
-             ("ios", _, _) if target.llvm_target.starts_with("arm64e") => (14, 0, 0),
-+            ("ios", _, _) if target.llvm_target.starts_with("arm64") => (7, 0, 0),
-+            ("ios", _, _) if target.llvm_target.starts_with("armv7s") => (6, 0, 0),
-+            ("ios", _, _) if target.llvm_target.starts_with("armv7") => (3, 0, 0),
-+            ("macos", _, _) if target.llvm_target.starts_with("x86_64h") => (10, 8, 0),
+         let (major, minor, patch) = match (&target.os, &target.arch, &target.env) {
+             (Os::MacOs, crate::spec::Arch::AArch64, _) => (11, 0, 0),
++            (Os::MacOs, crate::spec::Arch::X86_64, _) => (10, 6, 0),
+             (Os::IOs, crate::spec::Arch::AArch64, Env::MacAbi) => (14, 0, 0),
+             (Os::IOs, crate::spec::Arch::AArch64, Env::Sim) => (14, 0, 0),
+             (Os::IOs, _, _) if target.llvm_target.starts_with("arm64e") => (14, 0, 0),
++            (Os::IOs, _, _) if target.llvm_target.starts_with("arm64") => (7, 0, 0),
++            (Os::IOs, _, _) if target.llvm_target.starts_with("armv7s") => (6, 0, 0),
++            (Os::IOs, _, _) if target.llvm_target.starts_with("armv7") => (3, 0, 0),
              // Mac Catalyst defaults to 13.1 in Clang.
-             ("ios", _, "macabi") => (13, 1, 0),
-             ("tvos", "aarch64", "sim") => (14, 0, 0),
+             (Os::IOs, _, Env::MacAbi) => (13, 1, 0),
+             (Os::TvOs, crate::spec::Arch::AArch64, Env::Sim) => (14, 0, 0),
 diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
-index 1638c87c9ca..8f830afea43 100644
+index 424026bdcea..55bd0884030 100644
 --- a/compiler/rustc_target/src/spec/mod.rs
 +++ b/compiler/rustc_target/src/spec/mod.rs
-@@ -1564,6 +1564,8 @@ fn $module() {
+@@ -1575,6 +1575,8 @@ fn $module() {
      ("aarch64-apple-ios", aarch64_apple_ios),
      ("arm64e-apple-ios", arm64e_apple_ios),
      ("armv7s-apple-ios", armv7s_apple_ios),
@@ -151,20 +149,20 @@ index 1638c87c9ca..8f830afea43 100644
      ("aarch64-apple-ios-macabi", aarch64_apple_ios_macabi),
      ("aarch64-apple-ios-sim", aarch64_apple_ios_sim),
 diff --git a/compiler/rustc_target/src/spec/targets/aarch64_apple_ios.rs b/compiler/rustc_target/src/spec/targets/aarch64_apple_ios.rs
-index 3b522c34522..26973655897 100644
+index 4b8356cc71c..9945494012e 100644
 --- a/compiler/rustc_target/src/spec/targets/aarch64_apple_ios.rs
 +++ b/compiler/rustc_target/src/spec/targets/aarch64_apple_ios.rs
 @@ -1,5 +1,5 @@
  use crate::spec::base::apple::{Arch, TargetEnv, base};
--use crate::spec::{SanitizerSet, Target, TargetMetadata, TargetOptions};
-+use crate::spec::{Cc, LinkerFlavor, Lld, SanitizerSet, Target, TargetMetadata, TargetOptions};
+-use crate::spec::{Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
  
  pub(crate) fn target() -> Target {
-     let (opts, llvm_target, arch) = base("ios", Arch::Arm64, TargetEnv::Normal);
-@@ -19,6 +19,8 @@ pub(crate) fn target() -> Target {
-             features: "+neon,+fp-armv8,+apple-a7".into(),
-             max_atomic_width: Some(128),
-             supported_sanitizers: SanitizerSet::ADDRESS | SanitizerSet::THREAD,
+     let (opts, llvm_target, arch) = base(Os::IOs, Arch::Arm64, TargetEnv::Normal);
+@@ -21,6 +21,8 @@ pub(crate) fn target() -> Target {
+             supported_sanitizers: SanitizerSet::ADDRESS
+                 | SanitizerSet::THREAD
+                 | SanitizerSet::REALTIME,
 +            has_thread_local: false,
 +            late_link_args: TargetOptions::link_args(LinkerFlavor::Darwin(Cc::Yes, Lld::No), &["-lsyscompat"]),
              ..opts
@@ -172,15 +170,15 @@ index 3b522c34522..26973655897 100644
      }
 diff --git a/compiler/rustc_target/src/spec/targets/armv6_apple_ios.rs b/compiler/rustc_target/src/spec/targets/armv6_apple_ios.rs
 new file mode 100644
-index 00000000000..89d8dca7f13
+index 00000000000..5622546e6ff
 --- /dev/null
 +++ b/compiler/rustc_target/src/spec/targets/armv6_apple_ios.rs
 @@ -0,0 +1,25 @@
 +use crate::spec::base::apple::{Arch, TargetEnv, base};
-+use crate::spec::{Cc, LinkerFlavor, Lld, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, Target, TargetMetadata, TargetOptions};
 +
 +pub(crate) fn target() -> Target {
-+    let (opts, llvm_target, arch) = base("ios", Arch::Armv6, TargetEnv::Normal);
++    let (opts, llvm_target, arch) = base(Os::IOs, Arch::Armv6, TargetEnv::Normal);
 +    Target {
 +        llvm_target,
 +        metadata: TargetMetadata {
@@ -203,15 +201,15 @@ index 00000000000..89d8dca7f13
 +}
 diff --git a/compiler/rustc_target/src/spec/targets/armv7_apple_ios.rs b/compiler/rustc_target/src/spec/targets/armv7_apple_ios.rs
 new file mode 100644
-index 00000000000..9c5b3dbea32
+index 00000000000..c20fac6d858
 --- /dev/null
 +++ b/compiler/rustc_target/src/spec/targets/armv7_apple_ios.rs
 @@ -0,0 +1,25 @@
 +use crate::spec::base::apple::{Arch, TargetEnv, base};
-+use crate::spec::{Cc, LinkerFlavor, Lld, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, Target, TargetMetadata, TargetOptions};
 +
 +pub(crate) fn target() -> Target {
-+    let (opts, llvm_target, arch) = base("ios", Arch::Armv7, TargetEnv::Normal);
++    let (opts, llvm_target, arch) = base(Os::IOs, Arch::Armv7, TargetEnv::Normal);
 +    Target {
 +        llvm_target,
 +        metadata: TargetMetadata {
@@ -233,16 +231,16 @@ index 00000000000..9c5b3dbea32
 +    }
 +}
 diff --git a/compiler/rustc_target/src/spec/targets/armv7s_apple_ios.rs b/compiler/rustc_target/src/spec/targets/armv7s_apple_ios.rs
-index 63259043b73..ec76e781fdc 100644
+index cd9da114acf..666abe7fc7d 100644
 --- a/compiler/rustc_target/src/spec/targets/armv7s_apple_ios.rs
 +++ b/compiler/rustc_target/src/spec/targets/armv7s_apple_ios.rs
 @@ -1,5 +1,5 @@
  use crate::spec::base::apple::{Arch, TargetEnv, base};
--use crate::spec::{Target, TargetMetadata, TargetOptions};
-+use crate::spec::{Cc, LinkerFlavor, Lld, Target, TargetMetadata, TargetOptions};
+-use crate::spec::{Os, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, Target, TargetMetadata, TargetOptions};
  
  pub(crate) fn target() -> Target {
-     let (opts, llvm_target, arch) = base("ios", Arch::Armv7s, TargetEnv::Normal);
+     let (opts, llvm_target, arch) = base(Os::IOs, Arch::Armv7s, TargetEnv::Normal);
 @@ -17,6 +17,8 @@ pub(crate) fn target() -> Target {
          options: TargetOptions {
              features: "+v7,+vfp4,+neon".into(),
@@ -253,16 +251,16 @@ index 63259043b73..ec76e781fdc 100644
          },
      }
 diff --git a/compiler/rustc_target/src/spec/targets/i686_apple_darwin.rs b/compiler/rustc_target/src/spec/targets/i686_apple_darwin.rs
-index 96c477d5236..24b5abebe8c 100644
+index 1c3481928a8..4f9ae177a7a 100644
 --- a/compiler/rustc_target/src/spec/targets/i686_apple_darwin.rs
 +++ b/compiler/rustc_target/src/spec/targets/i686_apple_darwin.rs
 @@ -1,12 +1,12 @@
  use crate::spec::base::apple::{Arch, TargetEnv, base};
--use crate::spec::{Target, TargetMetadata, TargetOptions};
-+use crate::spec::{Cc, LinkerFlavor, Lld, Target, TargetMetadata, TargetOptions};
+-use crate::spec::{Os, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, Target, TargetMetadata, TargetOptions};
  
  pub(crate) fn target() -> Target {
-     let (opts, llvm_target, arch) = base("macos", Arch::I686, TargetEnv::Normal);
+     let (opts, llvm_target, arch) = base(Os::MacOs, Arch::I686, TargetEnv::Normal);
      Target {
          llvm_target,
          metadata: TargetMetadata {
@@ -286,16 +284,16 @@ index 96c477d5236..24b5abebe8c 100644
      }
  }
 diff --git a/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs b/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
-index 8892c50d844..caf5e677a12 100644
+index 8d0febc362d..3ce44ab73a3 100644
 --- a/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
 +++ b/compiler/rustc_target/src/spec/targets/x86_64_apple_darwin.rs
 @@ -1,12 +1,12 @@
  use crate::spec::base::apple::{Arch, TargetEnv, base};
--use crate::spec::{SanitizerSet, Target, TargetMetadata, TargetOptions};
-+use crate::spec::{Cc, LinkerFlavor, Lld, SanitizerSet, Target, TargetMetadata, TargetOptions};
+-use crate::spec::{Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
  
  pub(crate) fn target() -> Target {
-     let (opts, llvm_target, arch) = base("macos", Arch::X86_64, TargetEnv::Normal);
+     let (opts, llvm_target, arch) = base(Os::MacOs, Arch::X86_64, TargetEnv::Normal);
      Target {
          llvm_target,
          metadata: TargetMetadata {
@@ -304,7 +302,7 @@ index 8892c50d844..caf5e677a12 100644
              tier: Some(2),
              host_tools: Some(true),
              std: Some(true),
-@@ -17,12 +17,14 @@ pub(crate) fn target() -> Target {
+@@ -17,13 +17,15 @@ pub(crate) fn target() -> Target {
          arch,
          options: TargetOptions {
              mcount: "\u{1}mcount".into(),
@@ -313,7 +311,8 @@ index 8892c50d844..caf5e677a12 100644
              supported_sanitizers: SanitizerSet::ADDRESS
                  | SanitizerSet::CFI
                  | SanitizerSet::LEAK
-                 | SanitizerSet::THREAD,
+                 | SanitizerSet::THREAD
+                 | SanitizerSet::REALTIME,
              supports_xray: true,
 +            has_thread_local: false,
 +            late_link_args: TargetOptions::link_args(LinkerFlavor::Darwin(Cc::Yes, Lld::No), &["-lsyscompat"]),
@@ -321,16 +320,16 @@ index 8892c50d844..caf5e677a12 100644
          },
      }
 diff --git a/compiler/rustc_target/src/spec/targets/x86_64h_apple_darwin.rs b/compiler/rustc_target/src/spec/targets/x86_64h_apple_darwin.rs
-index 67b5a160a89..131dd246677 100644
+index 7f1fe485aa1..c71898262a0 100644
 --- a/compiler/rustc_target/src/spec/targets/x86_64h_apple_darwin.rs
 +++ b/compiler/rustc_target/src/spec/targets/x86_64h_apple_darwin.rs
 @@ -1,5 +1,5 @@
  use crate::spec::base::apple::{Arch, TargetEnv, base};
--use crate::spec::{SanitizerSet, Target, TargetMetadata, TargetOptions};
-+use crate::spec::{Cc, LinkerFlavor, Lld, SanitizerSet, Target, TargetMetadata, TargetOptions};
+-use crate::spec::{Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
++use crate::spec::{Cc, LinkerFlavor, Lld, Os, SanitizerSet, Target, TargetMetadata, TargetOptions};
  
  pub(crate) fn target() -> Target {
-     let (mut opts, llvm_target, arch) = base("macos", Arch::X86_64h, TargetEnv::Normal);
+     let (mut opts, llvm_target, arch) = base(Os::MacOs, Arch::X86_64h, TargetEnv::Normal);
 @@ -37,6 +37,10 @@ pub(crate) fn target() -> Target {
          data_layout:
              "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128".into(),
@@ -344,7 +343,7 @@ index 67b5a160a89..131dd246677 100644
      }
  }
 diff --git a/library/std/Cargo.toml b/library/std/Cargo.toml
-index 685c2cf162a..6902001b23b 100644
+index 3a673cf23b8..8466f9e572c 100644
 --- a/library/std/Cargo.toml
 +++ b/library/std/Cargo.toml
 @@ -10,7 +10,7 @@ edition = "2024"
@@ -356,49 +355,6 @@ index 685c2cf162a..6902001b23b 100644
  
  [dependencies]
  alloc = { path = "../alloc", public = true }
-diff --git a/library/std/src/sys/pal/unix/sync/condvar.rs b/library/std/src/sys/pal/unix/sync/condvar.rs
-index b6c3ba4136f..73768860723 100644
---- a/library/std/src/sys/pal/unix/sync/condvar.rs
-+++ b/library/std/src/sys/pal/unix/sync/condvar.rs
-@@ -1,6 +1,10 @@
- use super::Mutex;
- use crate::cell::UnsafeCell;
- use crate::pin::Pin;
-+#[cfg(not(target_os = "nto"))]
-+use crate::sys::pal::time::TIMESPEC_MAX;
-+#[cfg(target_os = "nto")]
-+use crate::sys::pal::time::TIMESPEC_MAX_CAPPED;
- use crate::time::Duration;
- 
- pub struct Condvar {
-@@ -51,10 +55,6 @@ impl Condvar {
-     /// * `mutex` must be locked by the current thread.
-     /// * This condition variable may only be used with the same mutex.
-     pub unsafe fn wait_timeout(&self, mutex: Pin<&Mutex>, dur: Duration) -> bool {
--        #[cfg(not(target_os = "nto"))]
--        use crate::sys::pal::time::TIMESPEC_MAX;
--        #[cfg(target_os = "nto")]
--        use crate::sys::pal::time::TIMESPEC_MAX_CAPPED;
-         use crate::sys::pal::time::Timespec;
- 
-         let mutex = mutex.raw();
-@@ -118,10 +118,12 @@ pub unsafe fn wait_timeout(&self, mutex: Pin<&Mutex>, dur: Duration) -> bool {
- 
-         let (dur, clamped) = if dur <= MAX_DURATION { (dur, false) } else { (MAX_DURATION, true) };
- 
--        let timeout = libc::timespec {
--            // This cannot overflow because of the clamping above.
--            tv_sec: dur.as_secs() as i64,
--            tv_nsec: dur.subsec_nanos() as i64,
-+        // This can overflow on 32-bit platforms, but not on 64-bit because of the clamping above.
-+        let timeout = if let Ok(tv_sec) = dur.as_secs().try_into() {
-+            libc::timespec { tv_sec, tv_nsec: dur.subsec_nanos() as _ }
-+        } else {
-+            // This is less than `MAX_DURATION` on 32-bit platforms.
-+            TIMESPEC_MAX
-         };
- 
-         let r = unsafe { libc::pthread_cond_timedwait_relative_np(self.raw(), mutex, &timeout) };
 diff --git a/library/std/src/sys/process/unix/unix.rs b/library/std/src/sys/process/unix/unix.rs
 index 7d944f2f7ee..cb6adb756b8 100644
 --- a/library/std/src/sys/process/unix/unix.rs
@@ -465,7 +421,7 @@ index 7d944f2f7ee..cb6adb756b8 100644
          target_os = "freebsd",
          target_os = "illumos",
 diff --git a/library/std/src/sys/sync/thread_parking/mod.rs b/library/std/src/sys/sync/thread_parking/mod.rs
-index e8a9dc884f8..683e9601c9c 100644
+index 74b5b72b19a..ef622621971 100644
 --- a/library/std/src/sys/sync/thread_parking/mod.rs
 +++ b/library/std/src/sys/sync/thread_parking/mod.rs
 @@ -26,11 +26,6 @@
@@ -480,16 +436,3 @@ index e8a9dc884f8..683e9601c9c 100644
      target_os = "xous" => {
          mod xous;
          pub use xous::Parker;
-diff --git a/src/tools/build-manifest/src/main.rs b/src/tools/build-manifest/src/main.rs
-index 9bae8b241a9..f60af2bbcee 100644
---- a/src/tools/build-manifest/src/main.rs
-+++ b/src/tools/build-manifest/src/main.rs
-@@ -100,6 +100,8 @@
-     "armv7r-none-eabihf",
-     "armv8r-none-eabihf",
-     "armv7s-apple-ios",
-+    "armv7-apple-ios",
-+    "armv6-apple-ios",
-     "bpfeb-unknown-none",
-     "bpfel-unknown-none",
-     "i386-apple-ios",
