@@ -261,7 +261,7 @@ cp docs/ldid.1 "$pwd/iphoneports-toolchain/share/man/man1"
 )
 
 printf "Building rust\n\n"
-rustver="1.92.0"
+rustver="1.93.0"
 curl -# -L "https://static.rust-lang.org/dist/rustc-${rustver}-src.tar.xz" | tar xJ && success=1
 tries=4
 [ -z "$success" ] && printf 'Failed to download rust sources, tries remaining: %s\n' "$tries"
