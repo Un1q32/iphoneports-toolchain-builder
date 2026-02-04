@@ -249,7 +249,7 @@ cp ./*.a "$pwd/iphoneports-toolchain/share/iphoneports/lib/clang/$llvmshortver/l
 )
 
 printf "Building ldid\n\n"
-ldidver="798f55bab61c6a3cf45f81014527bbe2b473958b"
+ldidver="c50e84e18532044b23ec5e971d55ab0cdd4b6685"
 curl -# -L "https://github.com/ProcursusTeam/ldid/archive/${ldidver}.tar.gz" | tar xz
 (
 cd "ldid-$ldidver"
