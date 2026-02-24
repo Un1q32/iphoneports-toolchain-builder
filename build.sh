@@ -53,7 +53,7 @@ host="$(cc -dumpmachine)"
 mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
-llvmver="21.1.8"
+llvmver="22.1.0"
 curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvmver.tar.gz" | tar -xz
 mkdir "llvm-project-llvmorg-$llvmver/build"
 (
@@ -74,7 +74,6 @@ llvm_components() {
     llvm-headers \
     clang-resource-headers \
     llvm-tblgen \
-    clang-tblgen \
     dsymutil \
     llvm-config \
     llvm-objcopy \
