@@ -53,7 +53,7 @@ host="$(cc -dumpmachine)"
 mkdir "$scriptroot/build" && cd "$scriptroot/build"
 
 printf "Building LLVM+Clang\n\n"
-llvmver="22.1.2"
+llvmver="22.1.3"
 curl -# -L "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-$llvmver.tar.gz" | tar -xz
 mkdir "llvm-project-llvmorg-$llvmver/build"
 (
@@ -114,7 +114,7 @@ mv bin/FileCheck "$pwd/iphoneports-toolchain/share/iphoneports/bin"
 )
 
 printf "Building libtapi\n\n"
-tapiver="1300.6.5"
+tapiver="1600.0.11.8"
 curl -# -L "https://github.com/tpoechtrager/apple-libtapi/archive/refs/heads/$tapiver.tar.gz" | tar -xz
 (
 cd "apple-libtapi-$tapiver"
