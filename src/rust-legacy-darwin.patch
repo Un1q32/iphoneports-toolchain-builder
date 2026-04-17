@@ -1,8 +1,8 @@
 diff --git a/compiler/rustc_codegen_ssa/src/back/link.rs b/compiler/rustc_codegen_ssa/src/back/link.rs
-index e4e954d2261..3697eb2a8b6 100644
+index 388503c7205..ecb8f77f492 100644
 --- a/compiler/rustc_codegen_ssa/src/back/link.rs
 +++ b/compiler/rustc_codegen_ssa/src/back/link.rs
-@@ -3065,6 +3065,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
+@@ -3144,6 +3144,8 @@ fn add_apple_link_args(cmd: &mut dyn Linker, sess: &Session, flavor: LinkerFlavo
      // Intentionally verbose to ensure that the list always matches correctly
      // with the list in the source above.
      let ld64_arch = match llvm_arch {
@@ -136,10 +136,10 @@ index 542c5e27849..e0ed52f402f 100644
              (Os::IOs, _, Env::MacAbi) => (13, 1, 0),
              (Os::TvOs, crate::spec::Arch::AArch64, Env::Sim) => (14, 0, 0),
 diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
-index 57effe3a866..5d27ec29fde 100644
+index d9c872c9b43..7f67fa8041a 100644
 --- a/compiler/rustc_target/src/spec/mod.rs
 +++ b/compiler/rustc_target/src/spec/mod.rs
-@@ -1575,6 +1575,8 @@ fn $module() {
+@@ -1576,6 +1576,8 @@ fn $module() {
      ("aarch64-apple-ios", aarch64_apple_ios),
      ("arm64e-apple-ios", arm64e_apple_ios),
      ("armv7s-apple-ios", armv7s_apple_ios),
@@ -343,7 +343,7 @@ index 7f1fe485aa1..c71898262a0 100644
      }
  }
 diff --git a/library/std/Cargo.toml b/library/std/Cargo.toml
-index 5c9ae52d9e6..1e9eaaf0a4c 100644
+index 1b7a41d6973..6e5174c5434 100644
 --- a/library/std/Cargo.toml
 +++ b/library/std/Cargo.toml
 @@ -10,7 +10,7 @@ edition = "2024"
@@ -356,7 +356,7 @@ index 5c9ae52d9e6..1e9eaaf0a4c 100644
  [dependencies]
  alloc = { path = "../alloc", public = true }
 diff --git a/library/std/src/sys/process/unix/unix.rs b/library/std/src/sys/process/unix/unix.rs
-index 460d5ec0f07..11dcf82e1b3 100644
+index 82ff94fb1e0..33f40f83305 100644
 --- a/library/std/src/sys/process/unix/unix.rs
 +++ b/library/std/src/sys/process/unix/unix.rs
 @@ -5,8 +5,6 @@
