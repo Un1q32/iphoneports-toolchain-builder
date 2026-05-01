@@ -153,10 +153,12 @@ mkdir "llvm-project-llvmorg-$llvmver/crtbuild"
 cd "llvm-project-llvmorg-$llvmver/crtbuild"
 curl -L -s -o ../compiler-rt/ubsan.c https://raw.githubusercontent.com/Un1q32/ubsan/2ebdd77d7da2a74657d05f6c27bf72f0258a0be4/ubsan.c
 
-x64srcs="emutls.c eprintf.c int_util.c extendhfsf2.c truncsfhf2.c truncdfhf2.c truncxfhf2.c"
+macarm64srcs="emutls.c"
+x64srcs="$macarm64srcs eprintf.c int_util.c extendhfsf2.c truncsfhf2.c truncdfhf2.c truncxfhf2.c"
 x32srcs="$x64srcs atomic.c"
 
-arm64srcs="emutls.c"
+arm64esrcs="emutls.c"
+arm64srcs="$arm64esrcs"
 armv7ssrcs="$arm64srcs atomic.c extendhfsf2.c truncsfhf2.c truncdfhf2.c"
 armv7srcs="$armv7ssrcs"
 armv6srcs="$armv7srcs floatundisf.c floatundidf.c"
@@ -174,7 +176,9 @@ done
 for src in $arm64srcs; do
     "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-ios7 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
 done
-"$clang" -target arm64e-apple-ios14 -xc /dev/null -c -o nothing.o &
+for src in $arm64esrcs; do
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64e-apple-ios14 "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64e-${src%\.c}.o" &
+done
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.ios.a ./*.o 2>/dev/null
@@ -186,7 +190,9 @@ done
 for src in $x64srcs; do
     "$clang" -isysroot "$scriptroot/src/sysroot" -target x86_64-apple-macos10.4 "../compiler-rt/lib/builtins/$src" -c -O3 -o "x86_64-${src%\.c}.o" &
 done
-"$clang" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e -xc /dev/null -c -o nothing.o &
+for src in $macarm64srcs; do
+    "$clang" -isysroot "$scriptroot/src/sysroot" -target arm64-apple-macos11.0 -arch arm64 -arch arm64e "../compiler-rt/lib/builtins/$src" -c -O3 -o "arm64-${src%\.c}.o" &
+done
 wait
 
 "$pwd/iphoneports-toolchain/share/iphoneports/cctools-bin/libtool" -static -o libclang_rt.osx.a ./*.o 2>/dev/null
